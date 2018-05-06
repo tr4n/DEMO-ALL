@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">testLogin</string>
+    <string name="facebook_app_id">186521465309166</string>
+    <string name="fb_login_protocol_scheme">fb186521465309166</string>
+    <string name="server_client_id">660391264954-ljatrt13mstsu0tb9mpinijg0aeo802f.apps.googleusercontent.com</string>
+</resources>
