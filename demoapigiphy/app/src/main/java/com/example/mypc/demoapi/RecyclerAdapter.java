@@ -71,12 +71,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG, "onClick: recycler view item" );
+                    /*
                     Utils.openFragment(
                             ( (MainActivity) context).getSupportFragmentManager(),
                             R.id.rv_items,
                             new GifFragment()
                     );
-
+                    */
                     Toast.makeText(context, "abcxyz", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "onClick:after open" );
                 }
