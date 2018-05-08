@@ -3,17 +3,21 @@ package com.example.mypc.demoapi.networks;
 import java.util.List;
 
 public class GifResponse {
-    public List<Data> data;
+    public List<DataJSON> data;
+    public PaginationJSON pagination;
+    public MetaJSON meta;
 
-    public class Data{
+    public class DataJSON {
         public ImagesJSON images;
         public String title;
+        public String id;
+
 
         public class ImagesJSON{
             public OriginalJSON original;
             public PreviewGifJSON preview_gif;
             public FixedHeightJSON fixed_height;
-            public FixedWidthJSON fixed_width;
+            public FixedWidthSmallJSON fixed_width_small;
 
             public class FixedHeightJSON{
                 public String url;
@@ -22,12 +26,13 @@ public class GifResponse {
 
             }
 
-            public class FixedWidthJSON{
+            public class FixedWidthSmallJSON{
                 public String url;
                 public String width;
                 public String height;
 
             }
+
 
 
             public class PreviewGifJSON{
@@ -44,5 +49,14 @@ public class GifResponse {
 
             }
         }
+    }
+
+    public class PaginationJSON {
+        public int count;
+        public int total_count;
+    }
+
+    public class MetaJSON {
+        public String status;
     }
 }
