@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -61,27 +63,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     public class RecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView ivGif;
         private Context context;
+        private View itemView;
 
         public RecyclerViewHolder(View itemView, final Context context) {
             super(itemView);
             ivGif = (ImageView) itemView.findViewById(R.id.iv_gif);
             this.context = context;
+            this.itemView = itemView;
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, "onClick: recycler view item" );
-                    /*
-                    Utils.openFragment(
-                            ( (MainActivity) context).getSupportFragmentManager(),
-                            R.id.rv_items,
-                            new GifFragment()
-                    );
-                    */
-                    Toast.makeText(context, "abcxyz", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "onClick:after open" );
-                }
-            });
+
         }
 
 
@@ -92,11 +82,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             int widthPixels = (int) (Resources.getSystem().getDisplayMetrics().widthPixels * 0.5);
 
             ivGif.setLayoutParams(new RelativeLayout.LayoutParams(
-                    widthPixels,
+                    widthPixels ,
                     (widthPixels * height) / width
             ));
 
-            ivGif.setBackgroundColor(colors[(new Random()).nextInt(colors.length)]);
+            ivGif.setColorFilter(colors[(new Random()).nextInt(colors.length)]);
+
 
             new CountDownTimer(500, 250) {
                 @Override
@@ -109,9 +100,31 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
                 @Override
                 public void onFinish() {
-                    ivGif.setBackgroundColor(Color.BLACK);
+                    ivGif.setColorFilter(null);
                 }
             }.start();
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG, "onClick: recycler view item" );
+
+
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("gif_model", gifModel);
+                    GifFragment gifFragment = new GifFragment();
+                    gifFragment.setArguments(bundle);
+
+                    Utils.openFragment(
+                            ( (MainActivity) context).getSupportFragmentManager(),
+                            R.id.cl_view_items,
+                            gifFragment
+                    );
+
+
+
+                }
+            });
 
 
         }

@@ -1,9 +1,18 @@
 package com.example.mypc.demoapi;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -12,12 +21,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.mypc.demoapi.models.GifModel;
 import com.example.mypc.demoapi.networks.GIPHYService;
 import com.example.mypc.demoapi.networks.GifResponse;
 import com.example.mypc.demoapi.networks.RetrofitInstance;
+import com.example.mypc.demoapi.services.FloatingService;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
@@ -31,6 +42,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.widget.GridLayout.VERTICAL;
 import static com.example.mypc.demoapi.R.id.cl_view_items;
 import static com.example.mypc.demoapi.R.id.tv_next;
 import static com.example.mypc.demoapi.R.id.tv_number_results;
@@ -40,6 +52,8 @@ import static com.example.mypc.demoapi.R.id.tv_previous;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private static final String LANGUAGE = "vie";
+    private  int SYSTEM_ALERT_WINDOW_PERMISSION = 2084;
 
     Fragment fragmentGif;
 
@@ -82,12 +96,26 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
 
+        askPermission();
         Definition();
         Initialization();
         setRecyclerView();
         changeFragment();
+        OnFloatingIcon();
 
     }
+
+    private void OnFloatingIcon() {
+
+    }
+
+    private void askPermission() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + getPackageName()));
+
+        startActivityForResult(intent, SYSTEM_ALERT_WINDOW_PERMISSION);
+    }
+
 
     private void Initialization() {
         currentPage = 0;
@@ -106,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         tvCount.setText("loading . . .");
         GIPHYService giphyService = RetrofitInstance.getRetrofitGifInstance().create(GIPHYService.class);
 
-        giphyService.getGifResponse(keySearch, LIMIT_RESULTS, "nHbzILQGgqGdO3kjWE8t6mbbV8AExd6N")
+        giphyService.getGifResponse(keySearch, LANGUAGE, LIMIT_RESULTS, "nHbzILQGgqGdO3kjWE8t6mbbV8AExd6N")
                 .enqueue(new Callback<GifResponse>() {
                     @Override
                     public void onResponse(Call<GifResponse> call, Response<GifResponse> response) {
@@ -172,6 +200,16 @@ public class MainActivity extends AppCompatActivity {
                 loadMore(0);
                 break;
             case R.id.iv_back:
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    startService(new Intent(MainActivity.this, FloatingService.class));
+                    finish();
+                } else if (Settings.canDrawOverlays(MainActivity.this)) {
+                    startService(new Intent(MainActivity.this, FloatingService.class));
+                    finish();
+                } else {
+                    askPermission();
+                    Toast.makeText(MainActivity.this, "You need System Alert Window Permission to do this", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.tv_number_results:
 
@@ -189,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadMore(int dir) {
-        if (currentPage + dir < 0 || currentPage + dir > maxPages ) return;
+        if (currentPage + dir < 0 || currentPage + dir > maxPages) return;
         currentPage += dir;
         subGifList.clear();
         for (int position = currentPage * MAX_ITEMS_PAGE; position < Math.min(gifModelList.size(), (currentPage + 1) * MAX_ITEMS_PAGE); position++) {
@@ -217,8 +255,13 @@ public class MainActivity extends AppCompatActivity {
                 StaggeredGridLayoutManager.VERTICAL
         );
         staggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
+
+
         rvItems.setLayoutManager(staggeredGridLayoutManager);
-        rvItems.setItemAnimator(null);
+
+
+        rvItems.addItemDecoration(new DividerItemDecoration(rvItems.getContext(), staggeredGridLayoutManager.getOrientation()));
+
         rvItems.setAdapter(rvAdapter);
 
         searchKey("beautiful girl idols");

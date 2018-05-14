@@ -2,7 +2,9 @@ package com.example.mypc.demoapi.models;
 
 import android.support.v7.widget.RecyclerView;
 
-public class GifModel  {
+import java.io.Serializable;
+
+public class GifModel implements Serializable {
     public String id;
     public String title;
     public String url;
