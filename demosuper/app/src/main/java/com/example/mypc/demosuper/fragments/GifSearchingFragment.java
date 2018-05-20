@@ -22,9 +22,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mypc.demosuper.R;
-import com.example.mypc.demosuper.adapters.GifRecyclerViewAdapter;
+import com.example.mypc.demosuper.adapters.VerticalRecyclerViewAdapter;
+import com.example.mypc.demosuper.models.FixedHeightGIFModel;
 import com.example.mypc.demosuper.models.GifModel;
 import com.example.mypc.demosuper.networks.GIPHYService;
 import com.example.mypc.demosuper.networks.GifResponse;
@@ -77,10 +79,13 @@ public class GifSearchingFragment extends Fragment implements TextView.OnEditorA
 
     private List<GifModel> gifModelList = new ArrayList<>();
     private List<GifModel> gifModelPageList = new ArrayList<>();
-    private GifRecyclerViewAdapter gifRecyclerViewAdapter;
+    private List<FixedHeightGIFModel> fixedHeightGIFModelList = new ArrayList<>();
+    private VerticalRecyclerViewAdapter verticalRecyclerViewAdapter;
     private StaggeredGridLayoutManager staggeredGridLayoutManager;
     private final int VERTICAL_ITEM_SPACE = 10;
     private final int HORIZONTAL_ITEM_SPACE = 10;
+
+    boolean isConnecting = true;
 
 
     public GifSearchingFragment() {
@@ -121,6 +126,7 @@ public class GifSearchingFragment extends Fragment implements TextView.OnEditorA
 
                     loadSearching(etSearch.getText().toString());
 
+
                     etSearch.setText("");
 
 
@@ -135,56 +141,73 @@ public class GifSearchingFragment extends Fragment implements TextView.OnEditorA
     private void Initialization() {
         llLoadingMore.setVisibility(View.GONE);
 
-        gifRecyclerViewAdapter = new GifRecyclerViewAdapter(gifModelPageList, getContext());
+        verticalRecyclerViewAdapter = new VerticalRecyclerViewAdapter(gifModelPageList, fixedHeightGIFModelList,getContext());
         staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         rvItems.setLayoutManager(staggeredGridLayoutManager);
-        rvItems.setAdapter(gifRecyclerViewAdapter);
+        rvItems.setAdapter(verticalRecyclerViewAdapter);
         rvItems.addOnScrollListener(new EndlessRecyclerViewScrollListener(staggeredGridLayoutManager) {
             @Override
             public void onLoadMore(int page, final int totalItemsCount) {
-                llLoadingMore.setVisibility(View.VISIBLE);
+                if(!isConnecting){
+                    Toast.makeText(getContext(), "No Internet!", Toast.LENGTH_SHORT).show();
 
-                CountDownTimer countDownTimer = new CountDownTimer(2000, 1000) {
+                    return;
+                }
+                if(gifModelList.isEmpty()){
+                    Toast.makeText(getContext(), "There aren't any result !", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                llLoadingMore.setVisibility(View.VISIBLE);
+                final int delayTime = 1000;
+
+                CountDownTimer countDownTimer = new CountDownTimer(2*delayTime, delayTime) {
                     @Override
                     public void onTick(long millisUntilFinished) {
-                        //    gifRecyclerViewAdapter.notifyDataSetChanged();
-                        //    Toast.makeText(getContext(), "Loading... ", Toast.LENGTH_SHORT).show();
-
-
-
 
                     }
 
                     @Override
                     public void onFinish() {
-                        llLoadingMore.setVisibility(View.GONE);
-                        int firstIndex = gifModelPageList.size();
-                        Log.d(TAG, "onTick: " + firstIndex);
-                        int secondIndex = Math.min(gifModelPageList.size() + 15, gifModelList.size());
-                        gifModelPageList.addAll(gifModelList.subList(firstIndex, secondIndex));
-                        gifRecyclerViewAdapter.notifyItemRangeInserted(firstIndex, gifModelPageList.size() - 1);
-
+                        if(llLoadingMore!= null) {
+                            llLoadingMore.setVisibility(View.GONE);
+                            int firstIndex = gifModelPageList.size();
+                            Log.d(TAG, "onTick: " + firstIndex);
+                            int secondIndex = Math.min(gifModelPageList.size() + 10, gifModelList.size());
+                            gifModelPageList.addAll(gifModelList.subList(firstIndex, secondIndex));
+                            verticalRecyclerViewAdapter.notifyItemRangeInserted(firstIndex, gifModelPageList.size() - 1);
+                        }
                     }
                 }.start();
 
+
+
             }
+
         });
     }
 
-    private void loadSearching(final String searchingKey) {
-        loadGifModelList(searchingKey, 200);
+
+
+    private boolean loadSearching(final String searchingKey) {
+        boolean[] internetConnected = new boolean[2];
+        internetConnected[0] = false;
+        loadGifModelList(searchingKey, 200, internetConnected);
+        isConnecting = internetConnected[0];
+        return internetConnected[0];
 
 
     }
 
-    public void loadGifModelList(String key, final int limit) {
+    public void loadGifModelList(String key, final int limit, final boolean[] internetConnected) {
         gifModelList.clear();
         gifModelPageList.clear();
+        fixedHeightGIFModelList.clear();
         llLoadingMore.setVisibility(View.VISIBLE);
+        internetConnected[0] = true;
 
 
         RetrofitInstance.getRetrofitGifInstance().create(GIPHYService.class)
-                .getGifResponse(key, limit, "WNHN34giS02m5C8EDvufq4E8CjKDIk02")
+                .searchGifResponse(key, limit, "WNHN34giS02m5C8EDvufq4E8CjKDIk02")
                 .enqueue(new Callback<GifResponse>() {
                     @Override
                     public void onResponse(Call<GifResponse> call, Response<GifResponse> response) {
@@ -198,8 +221,21 @@ public class GifSearchingFragment extends Fragment implements TextView.OnEditorA
 
                             List<GifResponse.DataJSON> dataJSONList = response.body().data;
 
+
                             for (GifResponse.DataJSON dataJSON : dataJSONList) {
                                 {
+                                    FixedHeightGIFModel fixedHeightGIFModel = new FixedHeightGIFModel(
+                                      dataJSON.id,
+                                      dataJSON.source_tld,
+                                            dataJSON.images.original.url,
+                                            dataJSON.title,
+                                            dataJSON.images.fixed_height.url,
+                                            dataJSON.images.fixed_height.width,
+                                            dataJSON.images.fixed_height.height,
+                                            dataJSON.images.fixed_width_small.url
+                                    );
+                                    fixedHeightGIFModelList.add(fixedHeightGIFModel);
+
                                     GifModel gifModel =
                                             new GifModel(
                                                     dataJSON.id,
@@ -217,16 +253,17 @@ public class GifSearchingFragment extends Fragment implements TextView.OnEditorA
                                 }
 
                             }
-                            gifRecyclerViewAdapter.notifyDataSetChanged();
+                            verticalRecyclerViewAdapter.notifyDataSetChanged();
                             llLoadingMore.setVisibility(View.GONE);
                         }
 
-
+                        internetConnected[0] = true;
                     }
 
                     @Override
                     public void onFailure(Call<GifResponse> call, Throwable t) {
-
+                        Toast.makeText(getContext(), "No Internet !", Toast.LENGTH_SHORT).show();
+                        internetConnected[0] = false;
 
                     }
                 });

@@ -11,6 +11,7 @@ public class GifResponse {
         public ImagesJSON images;
         public String title;
         public String id;
+        public String source_tld;
 
 
         public class ImagesJSON{
@@ -23,6 +24,7 @@ public class GifResponse {
                 public String url;
                 public String width;
                 public String height;
+
 
             }
 

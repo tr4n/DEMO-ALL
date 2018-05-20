@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void Initialization() {
-        Utils.openFragment(getSupportFragmentManager(), R.id.cl_fragment, new GifSearchingFragment());
+        Utils.openFragment(getSupportFragmentManager(), R.id.cl_fragment, new GifSearchingFragment(), null);
     }
 
     private void Definition() {

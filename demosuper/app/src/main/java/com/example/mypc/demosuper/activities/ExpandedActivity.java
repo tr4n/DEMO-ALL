@@ -39,7 +39,7 @@ public class ExpandedActivity extends AppCompatActivity {
         // getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
 
-        Utils.openFragment(getSupportFragmentManager(), R.id.cl_fragment, new GifSearchingFragment());
+        Utils.openFragment(getSupportFragmentManager(), R.id.cl_fragment, new GifSearchingFragment(), "main_fragment");
 
     }
 

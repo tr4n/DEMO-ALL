@@ -1,39 +1,48 @@
 package com.example.mypc.demosuper.utils;
 
-import android.app.FragmentManager;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.ImageView;
 
-import com.bumptech.glide.manager.SupportRequestManagerFragment;
-import com.example.mypc.demosuper.adapters.GifRecyclerViewAdapter;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.example.mypc.demosuper.R;
+import com.example.mypc.demosuper.adapters.VerticalRecyclerViewAdapter;
 import com.example.mypc.demosuper.models.GifModel;
 import com.example.mypc.demosuper.networks.GIPHYService;
 import com.example.mypc.demosuper.networks.GifResponse;
 import com.example.mypc.demosuper.networks.RetrofitInstance;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class Utils {
 
     private static final String TAG = "Utils";
+    private static int[] idColorResource = {R.drawable.blue, R.drawable.bluetwo, R.drawable.bluethree, R.drawable.brown, R.drawable.gray, R.drawable.green, R.drawable.greentwo, R.drawable.pink, R.drawable.purple, R.drawable.red, R.drawable.white, R.drawable.yellow};
 
-    public static void openFragment(android.support.v4.app.FragmentManager fragmentManager, int layoutID, Fragment fragment) {
-        fragmentManager.beginTransaction()
-                .add(layoutID, fragment)
-                .addToBackStack(null)
-                .commit();
+    public static void openFragment(android.support.v4.app.FragmentManager fragmentManager, int layoutID, Fragment fragment, String nameInStack) {
+
+            fragmentManager.beginTransaction()
+                    .add(layoutID, fragment)
+                    .addToBackStack(nameInStack)
+                    .commit();
+
 
     }
+
     public static void replaceFragment(android.support.v4.app.FragmentManager fragmentManager, int layoutID, Fragment fragment) {
         fragmentManager.beginTransaction()
                 .replace(layoutID, fragment)
@@ -47,14 +56,14 @@ public class Utils {
             final int limit,
             final List<GifModel> gifModels,
             final List<GifModel> gifModelPages,
-            final GifRecyclerViewAdapter gifRecyclerViewAdapter
+            final VerticalRecyclerViewAdapter verticalRecyclerViewAdapter
     ) {
         gifModels.clear();
         gifModelPages.clear();
 
 
         RetrofitInstance.getRetrofitGifInstance().create(GIPHYService.class)
-                .getGifResponse(key, limit, "nHbzILQGgqGdO3kjWE8t6mbbV8AExd6N")
+                .searchGifResponse(key, limit, "nHbzILQGgqGdO3kjWE8t6mbbV8AExd6N")
                 .enqueue(new Callback<GifResponse>() {
                     @Override
                     public void onResponse(Call<GifResponse> call, Response<GifResponse> response) {
@@ -80,17 +89,15 @@ public class Utils {
                                                     dataJSON.images.original.url
                                             );
                                     gifModels.add(gifModel);
-                                    if(gifModels.size() < 12)
-                                    {
+                                    if (gifModels.size() < 12) {
                                         gifModelPages.add(gifModel);
                                     }
-                                    Log.d(TAG, "onResponse: " + gifModel.url );
+                                    Log.d(TAG, "onResponse: " + gifModel.url);
                                 }
 
                             }
-                            gifRecyclerViewAdapter.notifyDataSetChanged();
+                            verticalRecyclerViewAdapter.notifyDataSetChanged();
                         }
-
 
 
                     }
@@ -103,6 +110,34 @@ public class Utils {
                 });
 
 
+    }
+
+    //auxiliary
+    public static void loadGifUrl(Context context, String url, final ImageView targetView, final ImageView temporaryView) {
+        if (url == null) return;
+
+
+        targetView.setVisibility(View.GONE);
+        temporaryView.setVisibility(View.VISIBLE);
+        temporaryView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        temporaryView.setImageResource(idColorResource[(new Random()).nextInt(idColorResource.length)]);
+        Glide.with(context)
+                .load(url)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        targetView.setVisibility(View.VISIBLE);
+                        temporaryView.setVisibility(View.GONE);
+
+                        return false;
+                    }
+                })
+                .into(targetView);
     }
 
 
