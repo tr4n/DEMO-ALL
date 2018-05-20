@@ -1,5 +1,7 @@
 package com.example.mypc.demosuper.utils;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
@@ -49,6 +51,18 @@ public class Utils {
                 .addToBackStack(null)
                 .commit();
 
+    }
+    public static boolean copyText(Context context, String text) {
+        if(text == null) return false;
+        if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setText(text);
+        } else {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            android.content.ClipData clip = android.content.ClipData.newPlainText("Copied Text", text);
+            clipboard.setPrimaryClip(clip);
+        }
+        return true;
     }
 
     public static void loadGifModelList(

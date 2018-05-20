@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
+    android:background="#000"
     tools:context=".fragments.DetailViewFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -18,6 +18,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignTop="@id/ll_relative_media"
         app:layout_constraintBottom_toTopOf="@+id/ll_relative_media"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
@@ -47,7 +49,33 @@
                     android:visibility="gone" />
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_marginVertical="8dp"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SOURCE: "
+                    android:textColor="#fff"
+                    android:textStyle="bold"
+                    android:textSize="10sp"/>
+                <TextView
+                    android:id="@+id/tv_source"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#fff"
+                    android:textSize="10sp"
+                    android:text="WWW.FACEBOOK.COM/QUANGHUYTRAN.HUST"/>
+
+
+            </LinearLayout>
+
+
+
             <android.support.constraint.ConstraintLayout
+                android:layout_marginVertical="20dp"
                 android:id="@+id/cl_sharing_items"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -56,11 +84,12 @@
                     android:id="@+id/iv_copy_link"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/floatgif"
+                    android:src="@drawable/ic_content_copy_white_24dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
+                    android:background="#fff"
                     android:id="@+id/iv_facebook"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -70,6 +99,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
+                    android:background="#fff"
                     android:id="@+id/iv_messenger"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -83,16 +113,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/instagram"
-                    app:layout_constraintStart_toEndOf="@+id/iv_open_list"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/iv_open_list"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/messenger"
+                    android:src="@drawable/ic_favorite_border_white_24dp"
                     app:layout_constraintStart_toEndOf="@+id/iv_messenger"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -101,32 +122,62 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/download"
+                    android:src="@drawable/ic_file_download_white_24dp"
                     app:layout_constraintStart_toEndOf="@+id/iv_tym"
                     app:layout_constraintTop_toTopOf="parent" />
 
             </android.support.constraint.ConstraintLayout>
 
 
+
+
         </LinearLayout>
     </ScrollView>
 
     <LinearLayout
+        android:elevation="8dp"
         android:id="@+id/ll_relative_media"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
+        android:background="#ff0000"
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent">
+        <RelativeLayout
 
-        <ImageView
-
-            android:id="@+id/iv_open_relative_list"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:src="@drawable/uparrow" />
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:padding="16dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#ffffff"
+                android:text="RELATED GIFS"/>
+
+            <ImageView
+                android:id="@+id/iv_open_relative_list"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_expand_less_white_24dp" />
+            <ImageView
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="left"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/igif"/>
+
+        </RelativeLayout>
+
+
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_relative_items"

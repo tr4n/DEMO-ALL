@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mypc.demosuper.R;
@@ -28,6 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import es.dmoral.toasty.Toasty;
 
 import static android.support.constraint.Constraints.TAG;
 import static android.view.View.GONE;
@@ -48,8 +50,6 @@ public class DetailViewFragment extends Fragment {
     ImageView ivMessenger;
     @BindView(R.id.iv_tym)
     ImageView ivTym;
-    @BindView(R.id.iv_open_list)
-    ImageView ivOpenList;
     @BindView(R.id.iv_download)
     ImageView ivDownload;
     @BindView(R.id.cl_sharing_items)
@@ -63,8 +63,11 @@ public class DetailViewFragment extends Fragment {
     ImageView ivOpenRelativeList;
 
     GifModel gifModel;
+    DataPassing dataPassing;
     FixedHeightGIFModel fixedHeightGIFModel;
     List<FixedHeightGIFModel> fixedHeightGIFModelList;
+    @BindView(R.id.tv_source)
+    TextView tvSource;
 
 
     public DetailViewFragment() {
@@ -93,18 +96,51 @@ public class DetailViewFragment extends Fragment {
     }
 
     private void setupUI() {
+        dataPassing = (DataPassing) getArguments().getSerializable("data_passing");
+        int widthScreen = Resources.getSystem().getDisplayMetrics().widthPixels;
+        if (dataPassing.isVertical) {
+            gifModel = dataPassing.gifModel;
+            int height = Integer.parseInt(gifModel.height);
+            int width = Integer.parseInt(gifModel.width);
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    widthScreen,
+                    (widthScreen * height) / width
+            );
+
+            ivOriginalGif.setLayoutParams(layoutParams);
+            ivPreOriginalGif.setLayoutParams(layoutParams);
+            Utils.loadGifUrl(getContext(), gifModel.originalUrl, ivOriginalGif, ivPreOriginalGif);
+
+        } else {
+            fixedHeightGIFModel = dataPassing.fixedHeightGIFModel;
+            int height = Integer.parseInt(fixedHeightGIFModel.height);
+            int width = Integer.parseInt(fixedHeightGIFModel.width);
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    widthScreen,
+                    (widthScreen * height) / width
+            );
+
+            ivOriginalGif.setLayoutParams(layoutParams);
+            ivPreOriginalGif.setLayoutParams(layoutParams);
+            Utils.loadGifUrl(getContext(), fixedHeightGIFModel.originalUrl, ivOriginalGif, ivPreOriginalGif);
+            tvSource.setText(fixedHeightGIFModel.source_tld.toString().toUpperCase());
+        }
+
+
+
         ivOpenRelativeList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if (rvRelativeItems.getVisibility() == View.GONE){
+                if (rvRelativeItems.getVisibility() == View.GONE) {
                     rvRelativeItems.setVisibility(View.VISIBLE);
-                    ivOpenRelativeList.setImageResource(R.drawable.downarrow);
+                    ivOpenRelativeList.setImageResource(R.drawable.ic_expand_more_white_24dp);
 
-                }
-                else{
+                } else {
                     rvRelativeItems.setVisibility(GONE);
-                    ivOpenRelativeList.setImageResource(R.drawable.uparrow);
+                    ivOpenRelativeList.setImageResource(R.drawable.ic_expand_less_white_24dp);
 
                 }
 
@@ -114,7 +150,7 @@ public class DetailViewFragment extends Fragment {
     }
 
     private void Initialization() {
-        DataPassing dataPassing = (DataPassing) getArguments().getSerializable("data_passing");
+        dataPassing = (DataPassing) getArguments().getSerializable("data_passing");
         int widthScreen = Resources.getSystem().getDisplayMetrics().widthPixels;
         if (dataPassing.isVertical) {
             gifModel = dataPassing.gifModel;
@@ -166,18 +202,26 @@ public class DetailViewFragment extends Fragment {
         unbinder.unbind();
     }
 
-    @OnClick({R.id.iv_copy_link, R.id.iv_facebook, R.id.iv_messenger, R.id.iv_tym, R.id.iv_open_list, R.id.iv_download, R.id.cl_sharing_items})
+    @OnClick({R.id.iv_copy_link, R.id.iv_facebook, R.id.iv_messenger, R.id.iv_tym, R.id.iv_download, R.id.cl_sharing_items})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_copy_link:
-                break;
+                String link = gifModel != null ? gifModel.originalUrl : fixedHeightGIFModel.originalUrl;
+                if(Utils.copyText(getContext(), link)){
+                    ImageView temporaryImageView = new ImageView(getContext());
+                    temporaryImageView.setImageResource(R.drawable.ic_content_copy_white_24dp);
+                    Toasty.normal(getContext(), "Link is copied", temporaryImageView.getDrawable()).show();
+                }else{
+                    Toasty.error(getContext(), "Link is empty!").show();
+                }
+
+
+
             case R.id.iv_facebook:
                 break;
             case R.id.iv_messenger:
                 break;
             case R.id.iv_tym:
-                break;
-            case R.id.iv_open_list:
                 break;
             case R.id.iv_download:
                 break;
