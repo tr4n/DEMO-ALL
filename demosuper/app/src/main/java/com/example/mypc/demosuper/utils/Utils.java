@@ -3,7 +3,11 @@ package com.example.mypc.demosuper.utils;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -21,10 +25,14 @@ import com.example.mypc.demosuper.models.GifModel;
 import com.example.mypc.demosuper.networks.GIPHYService;
 import com.example.mypc.demosuper.networks.GifResponse;
 import com.example.mypc.demosuper.networks.RetrofitInstance;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
+import java.io.File;
 import java.util.List;
 import java.util.Random;
 
+import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,10 +45,10 @@ public class Utils {
 
     public static void openFragment(android.support.v4.app.FragmentManager fragmentManager, int layoutID, Fragment fragment, String nameInStack) {
 
-            fragmentManager.beginTransaction()
-                    .add(layoutID, fragment)
-                    .addToBackStack(nameInStack)
-                    .commit();
+        fragmentManager.beginTransaction()
+                .add(layoutID, fragment)
+                .addToBackStack(nameInStack)
+                .commit();
 
 
     }
@@ -52,9 +60,10 @@ public class Utils {
                 .commit();
 
     }
+
     public static boolean copyText(Context context, String text) {
-        if(text == null) return false;
-        if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+        if (text == null) return false;
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
             android.text.ClipboardManager clipboard = (android.text.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
             clipboard.setText(text);
         } else {
@@ -152,6 +161,38 @@ public class Utils {
                     }
                 })
                 .into(targetView);
+    }
+
+    public static boolean downloadGif(GifModel gifModel, final Context context) {
+        if(gifModel == null) return false;
+
+        File folder = new File(Environment.getExternalStorageDirectory() + "/iGIF/download");
+
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        final File file = new File(folder, gifModel.id + ".gif");
+        if (file.exists()) {
+            Toasty.error(context, "file has been downloaded!").show();
+            return false;
+        }
+
+        final ImageView temporaryImage = new ImageView(context);
+        temporaryImage.setImageResource(R.drawable.ic_file_download_white_24dp);
+        Ion.with(context)
+                .load(gifModel.originalUrl)
+                .write(file)
+                .setCallback(new FutureCallback<File>() {
+                    @Override
+                    public void onCompleted(Exception e, File result) {
+                        Toasty.normal(context, "Download finish", temporaryImage.getDrawable()).show();
+                        Log.d(TAG, "onCompleted: " + file.getAbsolutePath().toString());
+                    }
+                });
+
+        return true;
+
     }
 
 

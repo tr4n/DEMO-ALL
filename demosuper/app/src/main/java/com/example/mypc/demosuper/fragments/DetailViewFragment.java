@@ -129,7 +129,6 @@ public class DetailViewFragment extends Fragment {
         }
 
 
-
         ivOpenRelativeList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -207,14 +206,13 @@ public class DetailViewFragment extends Fragment {
         switch (view.getId()) {
             case R.id.iv_copy_link:
                 String link = gifModel != null ? gifModel.originalUrl : fixedHeightGIFModel.originalUrl;
-                if(Utils.copyText(getContext(), link)){
+                if (Utils.copyText(getContext(), link)) {
                     ImageView temporaryImageView = new ImageView(getContext());
                     temporaryImageView.setImageResource(R.drawable.ic_content_copy_white_24dp);
                     Toasty.normal(getContext(), "Link is copied", temporaryImageView.getDrawable()).show();
-                }else{
+                } else {
                     Toasty.error(getContext(), "Link is empty!").show();
                 }
-
 
 
             case R.id.iv_facebook:
@@ -224,6 +222,7 @@ public class DetailViewFragment extends Fragment {
             case R.id.iv_tym:
                 break;
             case R.id.iv_download:
+                    Utils.downloadGif(gifModel, getContext());
                 break;
             case R.id.cl_sharing_items:
                 break;

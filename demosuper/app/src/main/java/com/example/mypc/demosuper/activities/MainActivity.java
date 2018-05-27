@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.example.mypc.demosuper.R;
 import com.example.mypc.demosuper.fragments.GifSearchingFragment;
 import com.example.mypc.demosuper.fragments.MainFragment;
+import com.example.mypc.demosuper.utils.AccountUtils;
 import com.example.mypc.demosuper.utils.Utils;
 
 
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void Initialization() {
+        AccountUtils.getKeyHash(getApplicationContext());
         Utils.openFragment(getSupportFragmentManager(), R.id.cl_fragment, new GifSearchingFragment(), null);
     }
 
