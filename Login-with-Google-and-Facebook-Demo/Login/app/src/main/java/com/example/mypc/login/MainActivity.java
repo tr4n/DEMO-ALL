@@ -5,10 +5,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,6 +39,8 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.tasks.Task;
 import com.squareup.picasso.Picasso;
+import com.txusballesteros.bubbles.BubbleLayout;
+import com.txusballesteros.bubbles.BubblesManager;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -53,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     GoogleSignInOptions googleSignInOptions;
     ImageView ivProfileGooglePicture;
     TextView tvFacebook, tvGoogle;
+    private BubblesManager bubblesManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,13 +68,27 @@ public class MainActivity extends AppCompatActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
         printKeyHash(this);
+        askPermisstion();
+        bubblesManager = new BubblesManager.Builder(this)
+                .build();
+        bubblesManager.initialize();
 
-        loginFacebook();
+
+      //  loginFacebook();
         loginGoogle();
         // Build a GoogleSignInClient with the options specified by gso.
         googleSignIn = GoogleSignIn.getClient(this, googleSignInOptions);
 
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
+
+        ivProfileGooglePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BubbleLayout bubbleView = (BubbleLayout) LayoutInflater
+                        .from(MainActivity.this).inflate(R.layout.bubble_layout, null);
+                bubblesManager.addBubble(bubbleView, 60, 20);
+            }
+        });
 
     }
 
@@ -107,6 +128,22 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void askPermisstion(){
+        if(Build.VERSION.SDK_INT >= 23) {
+            if (!Settings.canDrawOverlays(MainActivity.this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, 1234);
+            }
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        bubblesManager.recycle();
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
