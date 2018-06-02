@@ -22,6 +22,7 @@ public class MediaResponse {
             public FixedWidthJSON fixed_width;
             public FixedHeightSmallJSON fixed_height_small;
             public FixedWidthSmallJSON fixed_width_small;
+            public FixedWidthStillJSON fixed_width_still;
 
             public class FixedHeightJSON{
                 public String url;
@@ -45,6 +46,12 @@ public class MediaResponse {
 
             }
             public class FixedHeightSmallJSON{
+                public String url;
+                public String width;
+                public String height;
+
+            }
+            public class FixedWidthStillJSON{
                 public String url;
                 public String width;
                 public String height;

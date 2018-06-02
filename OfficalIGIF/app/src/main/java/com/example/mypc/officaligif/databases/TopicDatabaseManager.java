@@ -1,5 +1,6 @@
 package com.example.mypc.officaligif.databases;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -14,10 +15,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class TopicDatabaseManager {
-    private static final String TAG = "TopicTopicDatabaseManager";
+    private static final String TAG = "TopicDatabaseManager";
 
     private static final String TABLE_MAIN = "main_topics";
     private static final String TABLE_TOPICS = "topic_list";
+    private static final String SEARCHED_TOPICS = "searched_topic";
 
 
     private SQLiteDatabase sqLiteDatabase;
@@ -36,6 +38,7 @@ public class TopicDatabaseManager {
         topicDatabase = new TopicDatabase(context);
     }
 
+    @SuppressLint("LongLogTag")
     public List<SuggestTopicModel> getSuggestTopicModelList() {
         sqLiteDatabase = topicDatabase.getReadableDatabase();
 
@@ -63,16 +66,17 @@ public class TopicDatabaseManager {
             List<TopicModel> topicModelList = new ArrayList<>();
 
 
-            while (!cursor.isAfterLast()) {
+            while (cursor.moveToNext()) {
                 //read data
                 int id = cursor.getInt(4);
                 String key = cursor.getString(5);
                 String url = cursor.getString(6);
+
                 int parentid = cursor.getInt(7);
 
                 topicModelList.add(new TopicModel(id, key, url, parentid));
                 //next
-                cursor.moveToNext();
+                ;
             }
 
             suggestTopicModelList.add(new SuggestTopicModel(
@@ -86,6 +90,32 @@ public class TopicDatabaseManager {
 
 
         return suggestTopicModelList;
+
+
+    }
+
+    @SuppressLint("LongLogTag")
+    public void saveSearchedTopic(String topic) {
+        sqLiteDatabase = topicDatabase.getWritableDatabase();
+
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from " + SEARCHED_TOPICS + " where " + SEARCHED_TOPICS + ".topic LIKE '" + topic + "'", null);
+        if (cursor.getCount() == 0) {
+            int id = sqLiteDatabase.rawQuery("select * from " + SEARCHED_TOPICS, null).getCount();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("id", id);
+            contentValues.put("topic", topic);
+            contentValues.put("searching_times", 0);
+            sqLiteDatabase.insert(SEARCHED_TOPICS, null, contentValues);
+        } else {
+            int searchTimes = cursor.getInt(2);
+            if (searchTimes < 10) {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put("searching_times", ++searchTimes);
+                sqLiteDatabase.update(SEARCHED_TOPICS, contentValues, "topic = " + topic, null);
+
+            }
+            Log.d(TAG, "saveSearchedTopic: " + searchTimes);
+        }
 
 
     }

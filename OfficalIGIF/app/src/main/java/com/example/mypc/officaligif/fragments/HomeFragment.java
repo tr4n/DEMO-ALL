@@ -19,13 +19,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mypc.officaligif.R;
 import com.example.mypc.officaligif.adapters.GridViewAdapter;
 import com.example.mypc.officaligif.databases.TopicDatabaseManager;
+import com.example.mypc.officaligif.messages.SuggestTopicSticky;
 import com.example.mypc.officaligif.models.ResponseModel;
-import com.example.mypc.officaligif.models.ResultResponseListModel;
 import com.example.mypc.officaligif.models.SuggestTopicModel;
+import com.example.mypc.officaligif.utils.Utils;
+import com.txusballesteros.bubbles.BubbleLayout;
+import com.txusballesteros.bubbles.BubblesManager;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +70,8 @@ public class HomeFragment extends Fragment {
     @BindView(R.id.grid_view)
     GridView gridView;
 
+    private BubblesManager bubblesManager;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -89,10 +97,7 @@ public class HomeFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-
-                    editSearch(false);
-
-
+                    editSearch(true, true);
                     return true;
                 }
                 return false;
@@ -102,9 +107,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void Initialization() {
-        editSearch(false);
-        searching();
-
+        initializeBubblesManager();
+        editSearch(true, false);
         List<SuggestTopicModel> suggestTopicModelList = new ArrayList<>();
         suggestTopicModelList = TopicDatabaseManager.getInstance(getContext()).getSuggestTopicModelList();
 
@@ -116,26 +120,45 @@ public class HomeFragment extends Fragment {
 
     private void Definition() {
 
+
     }
 
-    private void searching() {
-        ResponseModel responseModel = new ResponseModel(
-                "naruto",
-                "vie",
-                25
-        );
-        ResultResponseListModel resultResponseListModel = new ResultResponseListModel();
-        //  Utils.getResultResponseList(responseModel, resultResponseListModel, getContext());
+    private void initializeBubblesManager() {
+        bubblesManager = new BubblesManager.Builder(getContext())
+                .setTrashLayout(R.layout.layout_bubble_trash)
+                .build();
+        bubblesManager.initialize();
+    }
+
+    private void addNewBubble() {
+        BubbleLayout bubbleView = (BubbleLayout) LayoutInflater.from(getContext()).inflate(R.layout.layout_bubbles, null);
+        bubbleView.setOnBubbleRemoveListener(new BubbleLayout.OnBubbleRemoveListener() {
+            @Override
+            public void onBubbleRemoved(BubbleLayout bubble) {
+            }
+        });
+        bubbleView.setOnBubbleClickListener(new BubbleLayout.OnBubbleClickListener() {
+
+            @Override
+            public void onBubbleClick(BubbleLayout bubble) {
+                Toast.makeText(getContext(), "Clicked !",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+        bubbleView.setShouldStickToWall(true);
+        bubblesManager.addBubble(bubbleView, 60, 20);
+
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        bubblesManager.recycle();
     }
 
-    private void editSearch(boolean editting) {
-        if (editting == true) {
+    private void editSearch(boolean done, boolean searchTopic) {
+        if (!done) {
             CountDownTimer countDownTimer = new CountDownTimer(300, 150) {
                 @Override
                 public void onTick(long millisUntilFinished) {
@@ -172,27 +195,42 @@ public class HomeFragment extends Fragment {
             etSearch.clearFocus();
             InputMethodManager in = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             in.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+            if(searchTopic){
+                String topic = etSearch.getText().toString();
+                Searching(topic);
+                TopicDatabaseManager.getInstance(getContext()).saveSearchedTopic(topic);
+            }
+
             etSearch.setText("");
 
+
+
         }
+    }
+
+    public void Searching(String topic){
+        EventBus.getDefault().postSticky(new SuggestTopicSticky(topic) );
+        Utils.openFragment(getFragmentManager(), R.id.cl_home_fragment, new SearchFragment());
     }
 
     @OnClick({R.id.iv_icon, R.id.iv_search_title, R.id.iv_back, R.id.iv_search})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_icon:
+                addNewBubble();
                 break;
             case R.id.iv_search_title:
-                editSearch(true);
-
+                editSearch(false, false);
                 break;
             case R.id.iv_back:
-                editSearch(false);
+                editSearch(true, false);
 
                 break;
             case R.id.iv_search:
-                editSearch(false);
+                editSearch(true, true);
                 break;
         }
     }
+
+
 }
