@@ -1,11 +1,13 @@
 package com.example.mypc.officaligif.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +20,17 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.mypc.officaligif.R;
+import com.example.mypc.officaligif.activities.MainActivity;
+import com.example.mypc.officaligif.fragments.SearchFragment;
+import com.example.mypc.officaligif.fragments.ShareFragment;
 import com.example.mypc.officaligif.messages.DataListSticky;
+import com.example.mypc.officaligif.messages.MediaSticky;
 import com.example.mypc.officaligif.models.MediaModel;
 import com.example.mypc.officaligif.utils.Utils;
+
+import org.greenrobot.eventbus.EventBus;
+
+import static org.greenrobot.eventbus.EventBus.TAG;
 
 public class SearchedAdapter extends RecyclerView.Adapter<SearchedAdapter.SearchedViewHolder>{
 
@@ -64,9 +74,9 @@ public class SearchedAdapter extends RecyclerView.Adapter<SearchedAdapter.Search
             this.ivMedia = itemView.findViewById(R.id.iv_media);
         }
 
-        public void setData(DataListSticky dataListSticky, int position){
+        public void setData(final DataListSticky dataListSticky, int position){
 
-            MediaModel mediaModel = dataListSticky.paperList.get(position);
+            final MediaModel mediaModel = dataListSticky.paperList.get(position);
 
             int width = Integer.parseInt(mediaModel.fixed_width_width);
             int height = Integer.parseInt(mediaModel.fixed_width_height);
@@ -83,7 +93,7 @@ public class SearchedAdapter extends RecyclerView.Adapter<SearchedAdapter.Search
 
 
             Glide.with(context)
-                    .load(mediaModel.fixed_width_small_url)
+                    .load(mediaModel.fixed_width_url)
                     .listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -102,6 +112,23 @@ public class SearchedAdapter extends RecyclerView.Adapter<SearchedAdapter.Search
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    EventBus.getDefault().postSticky(new MediaSticky(
+                            0,
+                            "iGIF",
+                            mediaModel,
+                            dataListSticky.relatedList
+
+                    ));
+
+                    Log.d(TAG, "onClick:ddd " + mediaModel.source_tld);
+
+
+                    Utils.openFragment(
+                            ( (MainActivity) context).getSupportFragmentManager(),
+                            R.id.cl_main_activity,
+                            new ShareFragment()
+                    );
 
                 }
             });

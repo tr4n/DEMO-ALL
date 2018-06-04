@@ -2,6 +2,7 @@ package com.example.mypc.officaligif.messages;
 
 import com.example.mypc.officaligif.models.MediaModel;
 import com.example.mypc.officaligif.models.PairModel;
+import com.example.mypc.officaligif.models.SuggestTopicModel;
 
 import java.util.ArrayList;
 import java.util.List;

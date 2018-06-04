@@ -1,9 +1,11 @@
 package com.example.mypc.officaligif.activities;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -13,6 +15,8 @@ import android.widget.Toast;
 
 import com.example.mypc.officaligif.R;
 import com.example.mypc.officaligif.adapters.ViewPagerAdapter;
+import com.example.mypc.officaligif.fragments.HomeFragment;
+import com.example.mypc.officaligif.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -73,13 +77,34 @@ public class MainActivity extends AppCompatActivity {
 
     }
     private void setupPermission() {
+        final Handler handler = new Handler();
+        Runnable checkOverlaySetting = new Runnable() {
+            @Override
+            @TargetApi(23)
+            public void run() {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    return;
+                }
+                if (Settings.canDrawOverlays(MainActivity.this)) {
+                    //You have the permission, re-launch MainActivity
+                    Intent i = new Intent(MainActivity.this, MainActivity.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(i);
+                    return;
+                }
+                handler.postDelayed(this, 1000);
+            }
+        };
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             //If the draw over permission is not available open the settings screen
             //to grant the permission.
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:" + getPackageName()));
             startActivityForResult(intent, REQUEST_PERMISSION);
+            handler.postDelayed(checkOverlaySetting, 1000);
         }
+
+
     }
 
     @Override
@@ -117,6 +142,8 @@ public class MainActivity extends AppCompatActivity {
             getFragmentManager().popBackStack();
         }
     }
+
+
 
 
 }

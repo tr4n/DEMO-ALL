@@ -87,12 +87,13 @@
             android:id="@+id/title_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#fff"
-            android:elevation="2dp"
+            android:background="#45ffffff"
+            android:elevation="3dp"
             android:visibility="visible">
 
 
             <ImageView
+                android:elevation="2dp"
                 android:id="@+id/iv_search"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
@@ -103,6 +104,7 @@
                 android:src="@drawable/ic_search_black_24dp" />
 
             <EditText
+                android:elevation="2dp"
                 android:id="@+id/et_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -110,9 +112,42 @@
                 android:layout_toStartOf="@id/iv_search"
                 android:imeOptions="actionSearch"
                 android:inputType="textCapWords"
-                android:textAlignment="textEnd"
+                android:textAlignment="center"
                 android:textColor="#ff00"
                 android:textSize="14sp" />
+
+
+
+            <LinearLayout
+
+                android:id="@+id/ll_recent_searches"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/et_search"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:elevation="2dp"
+                    android:padding="3dp"
+                    android:text="Recent Searches"
+                    android:textColor="#ff00"
+                    android:textStyle="bold" />
+
+                <GridView
+                    android:id="@+id/gv_recent_searches"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:background="#72ffffff"
+                    android:elevation="1dp" />
+
+
+            </LinearLayout>
+
         </RelativeLayout>
     </LinearLayout>
 
@@ -129,7 +164,6 @@
 
 
     </GridView>
-
 
 
 </android.support.constraint.ConstraintLayout>

@@ -5,5 +5,5 @@
     android:elevation="3dp"
     android:layout_height="80dp"
     android:layout_marginBottom="20dp"
-    android:src="@drawable/bubbletrash"
+    android:src="@drawable/ic_highlight_off_red_24dp"
     android:layout_gravity="bottom|center_horizontal" />

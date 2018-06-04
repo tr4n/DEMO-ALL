@@ -85,8 +85,11 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
+
         unbinder = ButterKnife.bind(this, view);
         EventBus.getDefault().register(this);
+
+
 
         Definition();
         Initialization();
@@ -94,8 +97,57 @@ public class SearchFragment extends Fragment {
 
         return view;
     }
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void getTopicMessager(SuggestTopicSticky suggestTopicSticky) {
+        tvKey.setText(suggestTopicSticky.topic);
+        responseModel = new ResponseModel(suggestTopicSticky.topic, "eng", 200);
+        tvKey.setSelected(true);
+        TopicDatabaseManager.getInstance(getContext()).saveSearchedTopic(suggestTopicSticky.topic);
+    }
 
-    private void setupUI() {
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void getDataListMessager(DataListSticky dataListSticky1) {
+        dataListSticky = dataListSticky1;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
+    @OnClick(R.id.iv_back)
+    public void onViewClicked() {
+        Utils.backFragment(getFragmentManager());
+
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+
+    private void Definition() {
 
     }
 
@@ -159,6 +211,7 @@ public class SearchFragment extends Fragment {
                         searchedAdapter = new SearchedAdapter(dataListSticky, getContext());
                         rvSearchedItems.setAdapter(searchedAdapter);
                         tvNumberResults.setText(response.body().pagination.total_count + " results");
+                        tvNumberResults.setVisibility(View.GONE);
                         setLoadMoreItems();
 
 
@@ -178,7 +231,7 @@ public class SearchFragment extends Fragment {
 
     }
 
-    private void Definition() {
+    private void setupUI() {
 
     }
 
@@ -213,6 +266,7 @@ public class SearchFragment extends Fragment {
                         searchedAdapter.notifyItemRangeInserted(pairModel.first, pairModel.second - 1);
 
 
+
                     }
                 }.start();
 
@@ -223,52 +277,6 @@ public class SearchFragment extends Fragment {
     }
 
 
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void getTopicMessager(SuggestTopicSticky suggestTopicSticky) {
-        tvKey.setText(suggestTopicSticky.topic);
-        responseModel = new ResponseModel(suggestTopicSticky.topic, "eng", 100);
-        tvKey.setSelected(true);
-        TopicDatabaseManager.getInstance(getContext()).saveSearchedTopic(suggestTopicSticky.topic);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void getDataListMessager(DataListSticky dataListSticky1) {
-        dataListSticky = dataListSticky1;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
-    }
-
-    @OnClick(R.id.iv_back)
-    public void onViewClicked() {
-        Utils.backFragment(getFragmentManager());
-    }
-
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
-    }
 
 
 }
