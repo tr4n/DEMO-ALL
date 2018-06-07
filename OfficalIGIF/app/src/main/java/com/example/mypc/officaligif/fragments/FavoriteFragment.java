@@ -8,12 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.mypc.officaligif.R;
+import com.example.mypc.officaligif.messages.BackSticky;
+
+import org.greenrobot.eventbus.EventBus;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class FavoriteFragment extends Fragment {
+
+    View fragmentView ;
 
 
     public FavoriteFragment() {
@@ -25,7 +30,29 @@ public class FavoriteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorite, container, false);
+         fragmentView = inflater.inflate(R.layout.fragment_favorite, container, false);
+
+        Definition();
+        Initialization();
+        setupUI();
+
+        return fragmentView;
     }
+
+
+
+    private void Definition(){
+        EventBus.getDefault().postSticky(new BackSticky(0));
+    };
+
+    private void Initialization(){
+
+    }
+
+    private void setupUI(){
+
+    }
+
+
 
 }

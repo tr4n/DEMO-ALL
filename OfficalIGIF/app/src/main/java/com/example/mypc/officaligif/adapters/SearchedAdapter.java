@@ -9,10 +9,12 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -29,6 +31,8 @@ import com.example.mypc.officaligif.models.MediaModel;
 import com.example.mypc.officaligif.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.Calendar;
 
 import static org.greenrobot.eventbus.EventBus.TAG;
 
@@ -66,6 +70,7 @@ public class SearchedAdapter extends RecyclerView.Adapter<SearchedAdapter.Search
         Context context;
         View itemView;
         ImageView ivLoadingMedia, ivMedia;
+        MediaModel mediaModel;
         public SearchedViewHolder(View itemView, Context context) {
             super(itemView);
             this.itemView = itemView;
@@ -90,10 +95,10 @@ public class SearchedAdapter extends RecyclerView.Adapter<SearchedAdapter.Search
             ivLoadingMedia.setVisibility(View.VISIBLE);
             ivLoadingMedia.setImageResource(Utils.gerRandomResourceColor());
 
-
+            this.mediaModel = mediaModel;
 
             Glide.with(context)
-                    .load(mediaModel.fixed_width_url)
+                    .load(mediaModel.fixed_width_downsampled_url)
                     .listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -108,30 +113,60 @@ public class SearchedAdapter extends RecyclerView.Adapter<SearchedAdapter.Search
                         }
                     }).into(ivMedia);
 
-
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    EventBus.getDefault().postSticky(new MediaSticky(
-                            0,
-                            "iGIF",
-                            mediaModel,
-                            dataListSticky.relatedList
-
-                    ));
-
-                    Log.d(TAG, "onClick:ddd " + mediaModel.source_tld);
-
-
-                    Utils.openFragment(
-                            ( (MainActivity) context).getSupportFragmentManager(),
-                            R.id.cl_main_activity,
-                            new ShareFragment()
-                    );
-
+                    setShortClick();
                 }
             });
+
+
+
+        }
+
+        private void setShortClick(){
+         //   dataListSticky.initializeRelatedList();
+            EventBus.getDefault().postSticky(new MediaSticky(
+                    0,
+                    "iGIF",
+                    mediaModel,
+                    dataListSticky
+
+            ));
+
+            Log.d(TAG, "onClick:ddd " + mediaModel.source_tld);
+
+
+            Utils.replaceFragmentTag(
+                    ( (MainActivity) context).getSupportFragmentManager(),
+                    R.id.cl_main_activity,
+                    new ShareFragment(),
+                    "SHARE_FRAGMENT"
+            );
+        }
+
+        private void setLongPress(){
+            if(ivMedia.getVisibility() == View.GONE)
+                return;
+            Toast.makeText(context, "Long press !", Toast.LENGTH_SHORT).show();
+            ivLoadingMedia.setVisibility(View.GONE);
+            ivMedia.setVisibility(View.VISIBLE);
+
+            Glide.with(context)
+                    .load(mediaModel.fixed_width_url)
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            ivLoadingMedia.setVisibility(View.VISIBLE);
+                            ivMedia.setVisibility(View.GONE);
+                            return false;
+                        }
+                    }).into(ivLoadingMedia);
         }
     }
 }

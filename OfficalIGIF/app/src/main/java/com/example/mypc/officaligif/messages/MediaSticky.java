@@ -8,16 +8,12 @@ public class MediaSticky {
     public int classID;
     public String title;
     public MediaModel mediaModel;
-    public List<MediaModel> relatedList ;
+    public DataListSticky dataListSticky;
 
-    public MediaSticky(int classID, String title, MediaModel mediaModel, List<MediaModel> relatedList) {
+    public MediaSticky(int classID, String title, MediaModel mediaModel, DataListSticky dataListSticky) {
         this.classID = classID;
+        this.title = title;
         this.mediaModel = mediaModel;
-        this.relatedList = relatedList;
-        this.title = mediaModel.title != null
-                ? mediaModel.title
-                : mediaModel.caption != null
-                ? mediaModel.caption : title;
-
+        this.dataListSticky = dataListSticky;
     }
 }

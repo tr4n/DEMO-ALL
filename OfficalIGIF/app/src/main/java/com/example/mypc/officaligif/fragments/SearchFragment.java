@@ -8,16 +8,19 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mypc.officaligif.R;
 import com.example.mypc.officaligif.adapters.SearchedAdapter;
 import com.example.mypc.officaligif.databases.TopicDatabaseManager;
+import com.example.mypc.officaligif.messages.BackSticky;
 import com.example.mypc.officaligif.messages.DataListSticky;
 import com.example.mypc.officaligif.messages.SuggestTopicSticky;
 import com.example.mypc.officaligif.models.MediaModel;
@@ -27,6 +30,7 @@ import com.example.mypc.officaligif.networks.MediaResponse;
 import com.example.mypc.officaligif.networks.RetrofitInstance;
 import com.example.mypc.officaligif.networks.iGIPHYService;
 import com.example.mypc.officaligif.recyclerview.EndlessRecyclerViewScrollListener;
+import com.example.mypc.officaligif.recyclerview.SpeedyStaggeredGridLayoutManager;
 import com.example.mypc.officaligif.utils.Utils;
 import com.wang.avi.AVLoadingIndicatorView;
 
@@ -100,7 +104,7 @@ public class SearchFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void getTopicMessager(SuggestTopicSticky suggestTopicSticky) {
         tvKey.setText(suggestTopicSticky.topic);
-        responseModel = new ResponseModel(suggestTopicSticky.topic, "eng", 200);
+        responseModel = new ResponseModel(suggestTopicSticky.topic, "eng", 150);
         tvKey.setSelected(true);
         TopicDatabaseManager.getInstance(getContext()).saveSearchedTopic(suggestTopicSticky.topic);
     }
@@ -118,7 +122,7 @@ public class SearchFragment extends Fragment {
 
     @OnClick(R.id.iv_back)
     public void onViewClicked() {
-        Utils.backFragment(getFragmentManager());
+        Utils.backFragment(getFragmentManager(), 0);
 
     }
 
@@ -148,12 +152,12 @@ public class SearchFragment extends Fragment {
 
 
     private void Definition() {
-
+        EventBus.getDefault().postSticky(new BackSticky(0));
     }
 
     private void Initialization() {
 
-        staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        staggeredGridLayoutManager = new SpeedyStaggeredGridLayoutManager(2, SpeedyStaggeredGridLayoutManager.VERTICAL);
         rvSearchedItems.setItemAnimator(null);
         rvSearchedItems.setLayoutManager(staggeredGridLayoutManager);
         RetrofitInstance.getRetrofitGifInstance().create(iGIPHYService.class)
@@ -201,6 +205,15 @@ public class SearchFragment extends Fragment {
                                     dataJSON.images.fixed_width_still.url,
                                     dataJSON.images.fixed_width_still.width,
                                     dataJSON.images.fixed_width_still.height,
+                                    dataJSON.images.preview_gif.url,
+                                    dataJSON.images.preview_gif.width,
+                                    dataJSON.images.preview_gif.height,
+                                    dataJSON.images.fixed_width_downsampled.url,
+                                    dataJSON.images.fixed_width_downsampled.width,
+                                    dataJSON.images.fixed_width_downsampled.height,
+                                    dataJSON.images.fixed_height_downsampled.url,
+                                    dataJSON.images.fixed_height_downsampled.width,
+                                    dataJSON.images.fixed_height_downsampled.height,
                                     position++
                             );
                             mediaModelList.add(mediaModel);
@@ -209,6 +222,7 @@ public class SearchFragment extends Fragment {
 
                         dataListSticky = new DataListSticky(mediaModelList);
                         searchedAdapter = new SearchedAdapter(dataListSticky, getContext());
+                        if(searchedAdapter!= null)
                         rvSearchedItems.setAdapter(searchedAdapter);
                         tvNumberResults.setText(response.body().pagination.total_count + " results");
                         tvNumberResults.setVisibility(View.GONE);
@@ -248,7 +262,7 @@ public class SearchFragment extends Fragment {
                         rlAvi.setVisibility(View.VISIBLE);
                     }
                 }
-                final int delayTime = 1000;
+                final int delayTime = 500;
 
                 CountDownTimer countDownTimer = new CountDownTimer(2 * delayTime, delayTime) {
                     @Override
@@ -262,8 +276,16 @@ public class SearchFragment extends Fragment {
                             rlAvi.setVisibility(View.GONE);
 
                         }
-                        PairModel pairModel = dataListSticky.addMore(10);
+                        final PairModel pairModel = dataListSticky.addMore(20);
                         searchedAdapter.notifyItemRangeInserted(pairModel.first, pairModel.second - 1);
+
+                        searchedAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+                            @Override
+                            public void onItemRangeInserted(int positionStart, int itemCount) {
+                               // super.onItemRangeInserted(positionStart, itemCount);
+                                staggeredGridLayoutManager.smoothScrollToPosition(rvSearchedItems,null,positionStart + 5);
+                            }
+                        });
 
 
 
@@ -275,8 +297,5 @@ public class SearchFragment extends Fragment {
 
         });
     }
-
-
-
 
 }

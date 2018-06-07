@@ -6,15 +6,19 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mypc.officaligif.R;
 import com.example.mypc.officaligif.adapters.RelatedAdapter;
+import com.example.mypc.officaligif.messages.BackSticky;
+import com.example.mypc.officaligif.messages.DataListSticky;
 import com.example.mypc.officaligif.messages.MediaSticky;
 import com.example.mypc.officaligif.models.MediaModel;
 import com.example.mypc.officaligif.utils.Utils;
@@ -61,20 +65,21 @@ public class ShareFragment extends Fragment {
 
     Unbinder unbinder;
 
-    boolean isExpanded = false;
-    int classID = 0;
-    String titleFragment;
-    MediaModel mediaModel;
-    View infalteView;
-    ImageView[] ivRelatedMedias = new ImageView[12];
-    List<MediaModel> relatedList = new ArrayList<>();
+
     @BindView(R.id.rl_related_title)
     RelativeLayout rlRelatedTitle;
     @BindView(R.id.iv_expanded)
     ImageView ivExpanded;
     @BindView(R.id.rv_related_items)
     RecyclerView rvRelatedItems;
-
+    boolean isExpanded = false;
+    int classID = 0;
+    String titleFragment;
+    MediaModel mediaModel;
+    DataListSticky dataListSticky;
+    View infalteView;
+    ImageView[] ivRelatedMedias = new ImageView[12];
+    List<MediaModel> relatedList = new ArrayList<>();
 
     public ShareFragment() {
         // Required empty public constructor
@@ -99,7 +104,8 @@ public class ShareFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void getMediaSticky(MediaSticky mediaSticky) {
         mediaModel = mediaSticky.mediaModel;
-        relatedList = mediaSticky.relatedList;
+        dataListSticky = mediaSticky.dataListSticky;
+        dataListSticky.initializeRelatedList();
         classID = mediaSticky.classID;
         titleFragment = mediaSticky.title;
     }
@@ -126,7 +132,7 @@ public class ShareFragment extends Fragment {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
-                Utils.backFragment(getFragmentManager());
+                Utils.backFragment(getFragmentManager(), classID);
                 break;
             case R.id.iv_copy_link:
                 break;
@@ -143,7 +149,7 @@ public class ShareFragment extends Fragment {
     }
 
     private void Definition() {
-
+        EventBus.getDefault().postSticky(new BackSticky(classID));
 
     }
 
@@ -161,10 +167,10 @@ public class ShareFragment extends Fragment {
         int height = Integer.parseInt(mediaModel.original_height);
         int fixedWidth = WIDTH_SCREEN;
         int fixedHeight = (fixedWidth * height) / width;
-        Utils.loadImageUrl(ivLoadingSharingMedia, ivSharingMedia, fixedWidth, fixedHeight, mediaModel.original_url, getContext());
+        Utils.loadImageUrl(ivLoadingSharingMedia, ivSharingMedia, fixedWidth, fixedHeight, mediaModel.fixed_width_url, getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager( getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        RelatedAdapter relatedAdapter = new RelatedAdapter(relatedList, getContext());
+        RelatedAdapter relatedAdapter = new RelatedAdapter(dataListSticky,classID, getContext());
         rvRelatedItems.setLayoutManager(linearLayoutManager);
         rvRelatedItems.setAdapter(relatedAdapter);
     }
@@ -184,5 +190,21 @@ public class ShareFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
 
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                   Utils.backFragment(getFragmentManager(), classID);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
 }

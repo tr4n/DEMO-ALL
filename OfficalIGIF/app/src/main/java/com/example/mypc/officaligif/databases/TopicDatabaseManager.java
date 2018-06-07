@@ -6,15 +6,32 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.CountDownTimer;
+import android.provider.ContactsContract;
+import android.support.v4.util.Pair;
 import android.util.Log;
+import android.view.View;
 
+import com.example.mypc.officaligif.adapters.SearchedAdapter;
+import com.example.mypc.officaligif.messages.DataListSticky;
+import com.example.mypc.officaligif.models.DataPair;
+import com.example.mypc.officaligif.models.MediaModel;
+import com.example.mypc.officaligif.models.PairModel;
+import com.example.mypc.officaligif.models.ResponseModel;
 import com.example.mypc.officaligif.models.SuggestTopicModel;
 import com.example.mypc.officaligif.models.TopicModel;
+import com.example.mypc.officaligif.networks.MediaResponse;
+import com.example.mypc.officaligif.networks.RetrofitInstance;
+import com.example.mypc.officaligif.networks.iGIPHYService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+
+import es.dmoral.toasty.Toasty;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TopicDatabaseManager {
     private static final String TAG = "TopicDatabaseManager";
@@ -72,15 +89,46 @@ public class TopicDatabaseManager {
 
             while (cursor.moveToNext()) {
                 //read data
-                int id = cursor.getInt(4);
-                String key = cursor.getString(5);
-                String url = cursor.getString(6);
-
-                int parentid = cursor.getInt(7);
+                 int id = cursor.getInt(4);
+                 String key = cursor.getString(5);
+                String url = cursor.getString(6).trim();
+                 int parentid = cursor.getInt(7);
 
                 topicModelList.add(new TopicModel(id, key, url, parentid));
-                //next
-                ;
+
+
+                final String keySearch = key;
+                /*
+                ResponseModel responseModel = new ResponseModel(keySearch + " random", "eng", 1);
+                RetrofitInstance.getRetrofitGifInstance().create(iGIPHYService.class)
+                        .getMediaResponses(responseModel.key, responseModel.lang, responseModel.limit, responseModel.api_key)
+                        .enqueue(new Callback<MediaResponse>() {
+                            @Override
+                            public void onResponse(Call<MediaResponse> call, final Response<MediaResponse> response) {
+                                if (response.body() == null || response.body().pagination.count == 0 || response.body().data.isEmpty()) {
+                                    return;
+                                }
+
+
+                                final List<MediaModel> mediaModelList = new ArrayList<>();
+                                List<MediaResponse.DataJSON> dataJSONList = response.body().data;
+                                String fixedUrl = response.body().data.get(0).images.preview_gif.url;
+                                Log.d(TAG, "onResponse: " + keySearch + ": " + fixedUrl);
+
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<MediaResponse> call, Throwable t) {
+
+                            }
+                        });
+
+*/
+
+
+
+              //  Log.d(TAG, "getSuggestTopicModelList: \n" + url + "\n- " + fixedUrl[0] );
             }
 
             suggestTopicModelList.add(new SuggestTopicModel(
@@ -178,9 +226,9 @@ public class TopicDatabaseManager {
 
             Log.d(TAG, "updateRecentTopic: after delete " + cursor.getCount());
             cursor.moveToFirst();
-            do{
-                Log.d(TAG, "updateRecentTopic: list after add " + cursor.getString(1) );
-            }while(cursor.moveToNext());
+            do {
+                Log.d(TAG, "updateRecentTopic: list after add " + cursor.getString(1));
+            } while (cursor.moveToNext());
 
 
         }
@@ -200,6 +248,36 @@ public class TopicDatabaseManager {
         Log.d(TAG, "getRecentSearchList: " + topicList.size());
         return topicList;
     }
+
+    private String getRandomUrlTopic(final DataPair<String, String> dataPair) {
+        ResponseModel responseModel = new ResponseModel(dataPair.first, "eng", 1);
+        RetrofitInstance.getRetrofitGifInstance().create(iGIPHYService.class)
+                .getMediaResponses(responseModel.key, responseModel.lang, responseModel.limit, responseModel.api_key)
+                .enqueue(new Callback<MediaResponse>() {
+                    @Override
+                    public void onResponse(Call<MediaResponse> call, final Response<MediaResponse> response) {
+                        if (response.body() == null || response.body().pagination.count == 0 || response.body().data.isEmpty()) {
+                            return;
+                        }
+
+
+                        final List<MediaModel> mediaModelList = new ArrayList<>();
+                        List<MediaResponse.DataJSON> dataJSONList = response.body().data;
+                        Log.d(TAG, "onResponse: dataPair.second before = " + dataPair.second);
+                        dataPair.second = response.body().data.get(0).images.preview_gif.url;
+                        Log.d(TAG, "onResponse: dataPair.second = \n" + dataPair.second + "\n" + response.body().data.get(0).images.preview_gif.url );
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<MediaResponse> call, Throwable t) {
+
+                    }
+                });
+        return dataPair.second;
+    }
+
+
 
 
 }

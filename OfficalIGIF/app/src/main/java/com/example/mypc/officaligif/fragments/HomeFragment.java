@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -15,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -24,11 +21,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.util.Util;
 import com.example.mypc.officaligif.R;
 import com.example.mypc.officaligif.adapters.GridViewAdapter;
-import com.example.mypc.officaligif.adapters.RecentSearchesAdapter;
 import com.example.mypc.officaligif.databases.TopicDatabaseManager;
+import com.example.mypc.officaligif.messages.BackSticky;
 import com.example.mypc.officaligif.messages.SuggestTopicSticky;
 import com.example.mypc.officaligif.models.SuggestTopicModel;
 import com.example.mypc.officaligif.utils.Utils;
@@ -37,15 +33,12 @@ import com.txusballesteros.bubbles.BubblesManager;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-
-import static android.content.ContentValues.TAG;
 
 
 /**
@@ -62,27 +55,20 @@ public class HomeFragment extends Fragment {
     RelativeLayout rlTitle;
     @BindView(R.id.iv_back)
     ImageView ivBack;
-    @BindView(R.id.rl_title_hide)
-    RelativeLayout rlTitleHide;
     @BindView(R.id.iv_search)
     ImageView ivSearch;
     @BindView(R.id.et_search)
     EditText etSearch;
-    @BindView(R.id.title_search)
-    RelativeLayout titleSearch;
+
     @BindView(R.id.title)
     LinearLayout title;
     Unbinder unbinder;
+    @BindView(R.id.title_search)
+    LinearLayout titleSearch;
     @BindView(R.id.grid_view)
     GridView gridView;
-    @BindView(R.id.gv_recent_searches)
-    GridView gvRecentSearches;
-    @BindView(R.id.ll_recent_searches)
-    LinearLayout llRecentSearches;
-
     private BubblesManager bubblesManager;
-    private RecentSearchesAdapter recentSearchesAdapter;
-    private List<String> recentSearchList ;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -104,6 +90,14 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+        //   bubblesManager.recycle();
+    }
+
+
     private void setupUI() {
         editSearch(true, false);
         etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -122,14 +116,14 @@ public class HomeFragment extends Fragment {
 
     private void Initialization() {
         initializeBubblesManager();
-        List<SuggestTopicModel> suggestTopicModelList =  TopicDatabaseManager.getInstance(getContext()).getSuggestTopicModelList();
+        List<SuggestTopicModel> suggestTopicModelList = TopicDatabaseManager.getInstance(getContext()).getSuggestTopicModelList();
         gridView.setAdapter(new GridViewAdapter(suggestTopicModelList, getContext()));
-        recentSearchList = TopicDatabaseManager.getInstance(getContext()).getRecentSearchList();
-        recentSearchesAdapter = new RecentSearchesAdapter(recentSearchList);
-        gvRecentSearches.setAdapter(recentSearchesAdapter);
+
     }
 
     private void Definition() {
+
+        EventBus.getDefault().postSticky(new BackSticky(0));
 
 
     }
@@ -162,16 +156,9 @@ public class HomeFragment extends Fragment {
 
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
-        bubblesManager.recycle();
-    }
 
     private void editSearch(boolean done, boolean searchTopic) {
-        recentSearchList = TopicDatabaseManager.getInstance(getContext()).getRecentSearchList();
-        recentSearchesAdapter.notifyDataSetChanged();
+
 
         if (!done) {
 
@@ -179,7 +166,6 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onTick(long millisUntilFinished) {
                     rlTitle.setVisibility(View.GONE);
-                    rlTitleHide.setVisibility(View.VISIBLE);
                     titleSearch.setVisibility(View.VISIBLE);
                 }
 
@@ -205,14 +191,8 @@ public class HomeFragment extends Fragment {
                 }
             }.start();
 
-            if (!recentSearchList.isEmpty()) {
-               // llRecentSearches.setVisibility(View.VISIBLE);
-                Log.d(TAG, "editSearch: " + recentSearchList.size());
-            }else{
-                Log.d(TAG, "editSearch: " + "empty");
-            }
+
         } else {
-            rlTitleHide.setVisibility(View.GONE);
             titleSearch.setVisibility(View.GONE);
             rlTitle.setVisibility(View.VISIBLE);
             etSearch.clearFocus();
@@ -221,10 +201,8 @@ public class HomeFragment extends Fragment {
             if (searchTopic) {
                 String topic = etSearch.getText().toString();
                 Searching(topic);
-                recentSearchesAdapter.notifyDataSetChanged();
-            }
 
-            llRecentSearches.setVisibility(View.GONE);
+            }
 
             etSearch.setText("");
 
@@ -233,8 +211,10 @@ public class HomeFragment extends Fragment {
     }
 
     public void Searching(String topic) {
+        titleSearch.setVisibility(View.GONE);
+        rlTitle.setVisibility(View.VISIBLE);
         EventBus.getDefault().postSticky(new SuggestTopicSticky(topic));
-        Utils.openFragment(getFragmentManager(), R.id.cl_home_fragment, new SearchFragment());
+        Utils.replaceFragment(getFragmentManager(), R.id.cl_main_activity, new SearchFragment());
     }
 
     @OnClick({R.id.iv_icon, R.id.iv_search_title, R.id.iv_back, R.id.iv_search})
@@ -242,7 +222,7 @@ public class HomeFragment extends Fragment {
         switch (view.getId()) {
             case R.id.iv_icon:
                 addNewBubble();
-                getFragmentManager().beginTransaction().detach(this).attach(this).commit();
+
                 break;
             case R.id.iv_search_title:
                 editSearch(false, false);

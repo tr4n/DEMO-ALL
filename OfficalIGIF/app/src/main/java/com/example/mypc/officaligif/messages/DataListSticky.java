@@ -31,10 +31,10 @@ public class DataListSticky {
         this.relatedList = new ArrayList<>();
         this.paperList = new ArrayList<>();
 
-        if(totalList.size() <= 10){
+        if(totalList.size() <= 2){
             paperList.addAll(totalList);
         }else{
-            paperList.addAll(totalList.subList(0, 10));
+            paperList.addAll(totalList.subList(0, 2));
         }
         initializeRelatedList();
     }
@@ -49,6 +49,7 @@ public class DataListSticky {
     }
 
     public void initializeRelatedList(){
+        relatedList.clear();
         if(totalList.size() <= 10){
             relatedList.addAll(totalList);
         }else{

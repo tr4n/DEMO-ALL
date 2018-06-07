@@ -55,12 +55,37 @@ public class Utils {
 
     }
 
+    public static void replaceFragment(android.support.v4.app.FragmentManager fragmentManager, int layoutID, Fragment fragment) {
+
+        fragmentManager.beginTransaction()
+                .replace(layoutID, fragment)
+                .addToBackStack(null)
+                .commit();
+
+    }
+    public static void openFragmentTag(FragmentManager fragmentManager, int layoutID, Fragment fragment, String TAG){
+        fragmentManager.beginTransaction()
+                .add(layoutID, fragment)
+                .addToBackStack(TAG)
+                .commit();
+    }
+
+    public static void replaceFragmentTag(FragmentManager fragmentManager, int layoutID, Fragment fragment, String TAG){
+        fragmentManager.beginTransaction()
+                .replace(layoutID, fragment)
+                .addToBackStack(TAG)
+                .commit();
+    }
 
 
-    public static void backFragment(FragmentManager fragmentManager){
 
-        if(fragmentManager.getBackStackEntryCount() > 0) {
+    public static void backFragment(FragmentManager fragmentManager, int numberStep){
+
+        while(fragmentManager.getBackStackEntryCount() > 0 ){
             fragmentManager.popBackStack();
+            if(--numberStep < 0){
+                break;
+            }
         }
     }
 

@@ -1,81 +1,171 @@
 package com.example.mypc.officaligif.activities;
 
 import android.annotation.TargetApi;
+import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.mypc.officaligif.R;
 import com.example.mypc.officaligif.adapters.ViewPagerAdapter;
+import com.example.mypc.officaligif.fragments.DownloadedFragment;
+import com.example.mypc.officaligif.fragments.FavoriteFragment;
 import com.example.mypc.officaligif.fragments.HomeFragment;
+import com.example.mypc.officaligif.messages.BackSticky;
+import com.example.mypc.officaligif.services.BubbleService;
 import com.example.mypc.officaligif.utils.Utils;
+import com.txusballesteros.bubbles.BubbleLayout;
+import com.txusballesteros.bubbles.BubblesManager;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final int REQUEST_PERMISSION = 2048;
 
 
-    @BindView(R.id.tab_layout)
-    TabLayout tabLayout;
-    @BindView(R.id.view_pager)
-    ViewPager viewPager;
+    BubblesManager bubblesManager;
+    int classID = 0;
+    @BindView(R.id.iv_float_icon)
+    ImageView ivFloatIcon;
+
+    ImageView ivFloatFavorite, ivFloatDownload, ivFloatHome, ivUpdropIcon, ivUpdropFavorite, ivUpdropDownload, ivUpdropHome;
+
+    LocalBroadcastManager mLocalBroadcastManager;
+    BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("finish_activity")) {
+                finish();
+            }
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        EventBus.getDefault().register(this);
         ButterKnife.bind(this);
         getSupportActionBar().hide();
+        mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction("finish_activity");
+        mLocalBroadcastManager.registerReceiver(mBroadcastReceiver, mIntentFilter);
 
         Definition();
         Initialization();
         setupUI();
     }
 
-    private void setupUI() {
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void getBackSticky(BackSticky backSticky) {
+        classID = backSticky.numberStep;
 
     }
 
-    private void Initialization() {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mLocalBroadcastManager.unregisterReceiver(mBroadcastReceiver);
+    }
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition(), false);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_PERMISSION) {
+            //Check if the permission is granted or not.
+            if (resultCode != RESULT_OK) {
+
+                Toast.makeText(this,
+                        "Draw over other app permission not available. Closing the application",
+                        Toast.LENGTH_SHORT).show();
+
+                finish();
+            } else {
+
             }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
+    @Override
+    public void onBackPressed() {
 
+        Fragment shareFragment = getFragmentManager().findFragmentByTag("SHARE_FRAGMENT");
+        Fragment homeFragment = getFragmentManager().findFragmentByTag("home_fragment");
+        if (shareFragment != null && shareFragment.isVisible()) {
+            return;
+        } else {
+            int count = getFragmentManager().getBackStackEntryCount();
+             if (count == 0) {
+                super.onBackPressed();
+                //additional cod
+            } else {
+                Utils.backFragment(getSupportFragmentManager(), 0);
             }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(viewPagerAdapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
+        }
 
 
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.iv_float_icon:
+                Intent intent = new Intent(MainActivity.this, BubbleService.class);
+                startService(intent);
+                break;
+            case R.id.iv_float_favorite:
+                setSelectedFloatItem(ivFloatFavorite, ivUpdropFavorite);
+                Utils.replaceFragmentTag(getSupportFragmentManager(), R.id.cl_main_activity, new FavoriteFragment(), "favorite_fragment");
+                break;
+            case R.id.iv_float_download:
+                setSelectedFloatItem(ivFloatDownload, ivUpdropDownload);
+                Utils.replaceFragmentTag(getSupportFragmentManager(), R.id.cl_main_activity, new DownloadedFragment(), "download_fragment");
+                break;
+            case R.id.iv_float_home:
+                setSelectedFloatItem(ivFloatHome, ivUpdropHome);
+                Utils.replaceFragmentTag(getSupportFragmentManager(), R.id.cl_main_activity, new HomeFragment(), "home_fragment");
+                break;
+
+        }
+    }
+
     private void setupPermission() {
         final Handler handler = new Handler();
         Runnable checkOverlaySetting = new Runnable() {
@@ -107,43 +197,102 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_PERMISSION) {
-            //Check if the permission is granted or not.
-            if (resultCode != RESULT_OK) {
-
-                Toast.makeText(this,
-                        "Draw over other app permission not available. Closing the application",
-                        Toast.LENGTH_SHORT).show();
-
-                finish();
-            }else {
-
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
     private void Definition() {
         setupPermission();
+        ivFloatDownload = findViewById(R.id.iv_float_download);
+        ivFloatFavorite = findViewById(R.id.iv_float_favorite);
+        ivUpdropDownload = findViewById(R.id.iv_updrop_download);
+        ivUpdropFavorite = findViewById(R.id.iv_updrop_favorite);
+        ivUpdropIcon = findViewById(R.id.iv_updrop_float);
+        ivFloatHome = findViewById(R.id.iv_float_home);
+        ivUpdropHome = findViewById(R.id.iv_updrop_home);
 
     }
 
-    @Override
-    public void onBackPressed() {
-        int count = getFragmentManager().getBackStackEntryCount();
+    private void Initialization() {
+        setSelectedFloatItem(ivFloatHome, ivUpdropHome);
+        Utils.openFragmentTag(getSupportFragmentManager(), R.id.cl_main_activity, new HomeFragment(), "home_fragment");
 
-        if (count == 0) {
-            super.onBackPressed();
-            //additional code
-        } else {
-            getFragmentManager().popBackStack();
-        }
     }
 
 
+    private void setupUI() {
+        ivFloatFavorite.setOnClickListener(this);
+        ivFloatDownload.setOnClickListener(this);
+        ivFloatIcon.setOnClickListener(this);
+        ivFloatHome.setOnClickListener(this);
+
+
+    }
+
+
+    private void initializeBubblesManager() {
+        bubblesManager = new BubblesManager.Builder(getApplicationContext())
+                .setTrashLayout(R.layout.layout_bubble_trash)
+                .build();
+        bubblesManager.initialize();
+    }
+
+    private void addNewBubble() {
+        BubbleLayout bubbleView = (BubbleLayout) LayoutInflater.from(getApplicationContext()).inflate(R.layout.layout_bubbles, null);
+        bubbleView.setOnBubbleRemoveListener(new BubbleLayout.OnBubbleRemoveListener() {
+            @Override
+            public void onBubbleRemoved(BubbleLayout bubble) {
+            }
+        });
+        bubbleView.setOnBubbleClickListener(new BubbleLayout.OnBubbleClickListener() {
+
+            @Override
+            public void onBubbleClick(BubbleLayout bubble) {
+                // Intent intent = new Intent(MainActivity.this, MainActivity.this);
+
+                Toast.makeText(getApplicationContext(), "Clicked !",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+        bubbleView.setShouldStickToWall(true);
+        int WIDTH_SCREEN = Resources.getSystem().getDisplayMetrics().widthPixels;
+        bubblesManager.addBubble(bubbleView, 60, WIDTH_SCREEN);
+
+
+    }
+
+    private void setSelectedFloatItem(View firstView, View secondView) {
+        Utils.backFragment(getSupportFragmentManager(), 0);
+        int fixedWith = (int) (Resources.getSystem().getDisplayMetrics().widthPixels * 0.16);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                fixedWith,
+                fixedWith
+        );
+        ivFloatHome.setLayoutParams(layoutParams);
+        ivFloatIcon.setLayoutParams(layoutParams);
+        ivFloatDownload.setLayoutParams(layoutParams);
+        ivFloatFavorite.setLayoutParams(layoutParams);
+        ivUpdropIcon.setVisibility(View.GONE);
+        ivUpdropFavorite.setVisibility(View.GONE);
+        ivUpdropDownload.setVisibility(View.GONE);
+        ivUpdropHome.setVisibility(View.GONE);
+        ivFloatFavorite.setBackgroundResource(R.drawable.background_unselected);
+        ivFloatHome.setBackgroundResource(R.drawable.background_unselected);
+        ivFloatFavorite.setBackgroundResource(R.drawable.background_unselected);
+        ivFloatDownload.setBackgroundResource(R.drawable.background_unselected);
+        int padding = 25;
+        ivFloatDownload.setPadding(padding, padding, padding, padding);
+        ivFloatHome.setPadding(padding, padding, padding, padding);
+        ivFloatFavorite.setPadding(padding, padding, padding, padding);
+
+
+        fixedWith = (int) (Resources.getSystem().getDisplayMetrics().widthPixels * 0.2);
+        layoutParams = new LinearLayout.LayoutParams(
+                fixedWith,
+                fixedWith
+        );
+
+        firstView.setLayoutParams(layoutParams);
+        secondView.setVisibility(View.VISIBLE);
+        firstView.setBackgroundResource(R.drawable.background_round);
+        firstView.setPadding(padding, padding, padding, padding);
+    }
 
 
 }

@@ -10,18 +10,26 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.mypc.officaligif.R;
+import com.example.mypc.officaligif.activities.MainActivity;
+import com.example.mypc.officaligif.fragments.ShareFragment;
+import com.example.mypc.officaligif.messages.DataListSticky;
+import com.example.mypc.officaligif.messages.MediaSticky;
 import com.example.mypc.officaligif.models.MediaModel;
 import com.example.mypc.officaligif.utils.Utils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
 public class RelatedAdapter extends RecyclerView.Adapter<RelatedAdapter.RelatedViewHolder> {
 
-    public List<MediaModel> relatedMediaList;
+    public DataListSticky dataListSticky;
+    public int classID;
     public Context context;
 
-    public RelatedAdapter(List<MediaModel> relatedMediaList, Context context) {
-        this.relatedMediaList = relatedMediaList;
+    public RelatedAdapter(DataListSticky dataListSticky, int classID, Context context) {
+        this.dataListSticky = dataListSticky;
+        this.classID = classID;
         this.context = context;
     }
 
@@ -34,12 +42,12 @@ public class RelatedAdapter extends RecyclerView.Adapter<RelatedAdapter.RelatedV
 
     @Override
     public void onBindViewHolder(@NonNull RelatedViewHolder holder, int position) {
-        holder.setData(relatedMediaList.get(position));
+        holder.setData(dataListSticky,position, classID);
     }
 
     @Override
     public int getItemCount() {
-        return relatedMediaList.size();
+        return dataListSticky.relatedList.size();
     }
 
     public class RelatedViewHolder extends RecyclerView.ViewHolder{
@@ -56,15 +64,35 @@ public class RelatedAdapter extends RecyclerView.Adapter<RelatedAdapter.RelatedV
             this.ivMedia = itemView.findViewById(R.id.iv_media);
         }
 
-        public void setData(MediaModel mediaModel){
-            int width = Integer.parseInt(mediaModel.original_width);
-            int height = Integer.parseInt(mediaModel.original_height);
+        public void setData(final DataListSticky dataListSticky, int  position, final int classID){
+            final MediaModel mediaModel = dataListSticky.relatedList.get(position);
+            int width = Integer.parseInt(mediaModel.fixed_height_downsampled_height);
+            int height = Integer.parseInt(mediaModel.fixed_height_downsampled_width);
             int fixedWidth =  (int) (Resources.getSystem().getDisplayMetrics().widthPixels*0.4);
             int fixedHeight = (int) (Resources.getSystem().getDisplayMetrics().heightPixels*0.2);
             ivMedia.setScaleType(ImageView.ScaleType.CENTER_CROP);
             Utils.loadImageUrl(ivLoading, ivMedia,fixedWidth, fixedHeight,mediaModel.fixed_height_url, context );
 
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DataListSticky childDataListSticky = dataListSticky;
+                    childDataListSticky.initializeRelatedList();
+                    EventBus.getDefault().postSticky(new MediaSticky(
+                            classID + 1,
+                            "iGIF",
+                            mediaModel,
+                            childDataListSticky
+
+                    ));
+                    Utils.replaceFragment(
+                            ( (MainActivity) context).getSupportFragmentManager(),
+                            R.id.cl_main_activity,
+                            new ShareFragment()
+                    );
+                }
+            });
 
         }
 
