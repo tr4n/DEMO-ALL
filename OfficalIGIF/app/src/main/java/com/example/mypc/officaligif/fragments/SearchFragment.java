@@ -7,19 +7,16 @@ import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.mypc.officaligif.R;
 import com.example.mypc.officaligif.adapters.SearchedAdapter;
-import com.example.mypc.officaligif.databases.TopicDatabaseManager;
+import com.example.mypc.officaligif.database_dir.TopicDatabaseManager;
 import com.example.mypc.officaligif.messages.BackSticky;
 import com.example.mypc.officaligif.messages.DataListSticky;
 import com.example.mypc.officaligif.messages.SuggestTopicSticky;
@@ -49,8 +46,6 @@ import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * A simple {@link Fragment} subclass.

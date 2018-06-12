@@ -56,9 +56,15 @@ public class BubbleService extends Service implements View.OnClickListener, View
     @Override
     public void onCreate() {
         super.onCreate();
+
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
         Definition();
         Initialization();
         setupUI();
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -93,8 +99,8 @@ public class BubbleService extends Service implements View.OnClickListener, View
     }
 
     private void Initialization() {
+        Log.d(TAG, "Initialization: ");
         isExpanded = false;
-
         // Init Bubble View
 
         lpBubble = new WindowManager.LayoutParams(

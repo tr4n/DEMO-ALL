@@ -1,37 +1,19 @@
-package com.example.mypc.officaligif.databases;
+package com.example.mypc.officaligif.database_dir;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.CountDownTimer;
-import android.provider.ContactsContract;
-import android.support.v4.util.Pair;
 import android.util.Log;
-import android.view.View;
 
-import com.example.mypc.officaligif.adapters.SearchedAdapter;
-import com.example.mypc.officaligif.messages.DataListSticky;
-import com.example.mypc.officaligif.models.DataPair;
 import com.example.mypc.officaligif.models.MediaModel;
-import com.example.mypc.officaligif.models.PairModel;
-import com.example.mypc.officaligif.models.ResponseModel;
 import com.example.mypc.officaligif.models.SuggestTopicModel;
 import com.example.mypc.officaligif.models.TopicModel;
-import com.example.mypc.officaligif.networks.MediaResponse;
-import com.example.mypc.officaligif.networks.RetrofitInstance;
-import com.example.mypc.officaligif.networks.iGIPHYService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-
-import es.dmoral.toasty.Toasty;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class TopicDatabaseManager {
     private static final String TAG = "TopicDatabaseManager";
@@ -40,6 +22,7 @@ public class TopicDatabaseManager {
     private static final String TABLE_TOPICS = "topic_list";
     private static final String SEARCHED_TOPICS = "searched_topics";
     private static final String RECENT_TOPICS = "recent_search";
+    private static final String FAVORITE_TABLE = "tbl_favorites";
 
 
     private SQLiteDatabase sqLiteDatabase;
@@ -89,10 +72,10 @@ public class TopicDatabaseManager {
 
             while (cursor.moveToNext()) {
                 //read data
-                 int id = cursor.getInt(4);
-                 String key = cursor.getString(5);
+                int id = cursor.getInt(4);
+                String key = cursor.getString(5);
                 String url = cursor.getString(6).trim();
-                 int parentid = cursor.getInt(7);
+                int parentid = cursor.getInt(7);
 
                 topicModelList.add(new TopicModel(id, key, url, parentid));
 
@@ -127,8 +110,7 @@ public class TopicDatabaseManager {
 */
 
 
-
-              //  Log.d(TAG, "getSuggestTopicModelList: \n" + url + "\n- " + fixedUrl[0] );
+                //  Log.d(TAG, "getSuggestTopicModelList: \n" + url + "\n- " + fixedUrl[0] );
             }
 
             suggestTopicModelList.add(new SuggestTopicModel(
@@ -249,35 +231,140 @@ public class TopicDatabaseManager {
         return topicList;
     }
 
-    private String getRandomUrlTopic(final DataPair<String, String> dataPair) {
-        ResponseModel responseModel = new ResponseModel(dataPair.first, "eng", 1);
-        RetrofitInstance.getRetrofitGifInstance().create(iGIPHYService.class)
-                .getMediaResponses(responseModel.key, responseModel.lang, responseModel.limit, responseModel.api_key)
-                .enqueue(new Callback<MediaResponse>() {
-                    @Override
-                    public void onResponse(Call<MediaResponse> call, final Response<MediaResponse> response) {
-                        if (response.body() == null || response.body().pagination.count == 0 || response.body().data.isEmpty()) {
-                            return;
-                        }
+
+    public List<MediaModel> getFavoriteList() {
+        List<MediaModel> favoriteList = new ArrayList<>();
+
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from " + FAVORITE_TABLE, null);
+        cursor.moveToNext();
+
+        while (cursor.moveToNext()) {
+            String id = cursor.getString(0);
+            String original_url = cursor.getString(1);
+            String original_width = cursor.getString(2);
+            String original_height = cursor.getString(3);
+            String source_tld = cursor.getString(4);
+            String title = cursor.getString(5);
+            String caption = cursor.getString(6);
+            String fixed_height_url = cursor.getString(7);
+            String fixed_height_width = cursor.getString(8);
+            String fixed_height_height = cursor.getString(9);
+            String fixed_height_small_url = cursor.getString(10);
+            String fixed_height_small_width = cursor.getString(11);
+            String fixed_height_small_height = cursor.getString(12);
+            String fixed_width_url = cursor.getString(13);
+            String fixed_width_width = cursor.getString(14);
+            String fixed_width_height = cursor.getString(15);
+            String fixed_width_small_url = cursor.getString(16);
+            String fixed_width_small_width = cursor.getString(17);
+            String fixed_width_small_height = cursor.getString(18);
+            String fixed_width_still_url = cursor.getString(19);
+            String fixed_width_still_width = cursor.getString(20);
+            String fixed_width_still_height = cursor.getString(21);
+            String preview_gif_url = cursor.getString(22);
+            String preview_gif_width = cursor.getString(23);
+            String preview_gif_height = cursor.getString(24);
+            String fixed_width_downsampled_url = cursor.getString(25);
+            String fixed_width_downsampled_width = cursor.getString(26);
+            String fixed_width_downsampled_height = cursor.getString(27);
+            String fixed_height_downsampled_url = cursor.getString(28);
+            String fixed_height_downsampled_width = cursor.getString(29);
+            String fixed_height_downsampled_height = cursor.getString(30);
+            int position = cursor.getInt(31);
+
+            MediaModel mediaModel = new MediaModel(
+                    id,
+                    original_url,
+                    original_width,
+                    original_height,
+                    source_tld,
+                    title,
+                    caption,
+                    fixed_height_url,
+                    fixed_height_width,
+                    fixed_height_height,
+                    fixed_height_small_url,
+                    fixed_height_small_width,
+                    fixed_height_small_height,
+                    fixed_width_url,
+                    fixed_width_width,
+                    fixed_width_height,
+                    fixed_width_small_url,
+                    fixed_width_small_width,
+                    fixed_width_small_height,
+                    fixed_width_still_url,
+                    fixed_width_still_width,
+                    fixed_width_still_height,
+                    preview_gif_url,
+                    preview_gif_width,
+                    preview_gif_height,
+                    fixed_width_downsampled_url,
+                    fixed_width_downsampled_width,
+                    fixed_width_downsampled_height,
+                    fixed_height_downsampled_url,
+                    fixed_height_downsampled_width,
+                    fixed_height_downsampled_height,
+                    position
+            );
+            
+            favoriteList.add(mediaModel);
+        }
 
 
-                        final List<MediaModel> mediaModelList = new ArrayList<>();
-                        List<MediaResponse.DataJSON> dataJSONList = response.body().data;
-                        Log.d(TAG, "onResponse: dataPair.second before = " + dataPair.second);
-                        dataPair.second = response.body().data.get(0).images.preview_gif.url;
-                        Log.d(TAG, "onResponse: dataPair.second = \n" + dataPair.second + "\n" + response.body().data.get(0).images.preview_gif.url );
+        return favoriteList;
 
-                    }
+    }
+    
+    public boolean inFavoriteList(MediaModel mediaModel){
+        Cursor cursor = sqLiteDatabase.rawQuery(" select * from " + FAVORITE_TABLE + " where id LIKE \"" + mediaModel.id+"\"", null);
+        return (cursor.getCount() > 0); 
+    }
+    
+    public boolean addFavoriteItem(MediaModel mediaModel){
+        if(inFavoriteList(mediaModel)) return false;
+        
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("id", mediaModel.id);
+        contentValues.put("original_url", mediaModel.original_url);
+        contentValues.put("original_width", mediaModel.original_width);
+        contentValues.put("original_height", mediaModel.original_height);
+        contentValues.put("source_tld", mediaModel.source_tld);
+        contentValues.put("title", mediaModel.title);
+        contentValues.put("caption", mediaModel.caption);
+        contentValues.put("fixed_height_url", mediaModel.fixed_height_url);
+        contentValues.put("fixed_height_width", mediaModel.fixed_height_width);
+        contentValues.put("fixed_height_height", mediaModel.fixed_height_height);
+        contentValues.put("fixed_height_small_url", mediaModel.fixed_height_small_url);
+        contentValues.put("fixed_height_small_width", mediaModel.fixed_height_small_width);
+        contentValues.put("fixed_height_small_height", mediaModel.fixed_height_small_height);
+        contentValues.put("fixed_width_url", mediaModel.fixed_width_url);
+        contentValues.put("fixed_width_width", mediaModel.fixed_width_width);
+        contentValues.put("fixed_width_height", mediaModel.fixed_width_height);
+        contentValues.put("fixed_width_small_url", mediaModel.fixed_width_small_url);
+        contentValues.put("fixed_width_small_width", mediaModel.fixed_width_small_width);
+        contentValues.put("fixed_width_small_height", mediaModel.fixed_width_small_height);
+        contentValues.put("fixed_width_still_url", mediaModel.fixed_width_still_url);
+        contentValues.put("fixed_width_still_width", mediaModel.fixed_width_still_width);
+        contentValues.put("fixed_width_still_height", mediaModel.fixed_width_still_height);
+        contentValues.put("preview_gif_url", mediaModel.preview_gif_url);
+        contentValues.put("preview_gif_width", mediaModel.preview_gif_width);
+        contentValues.put("preview_gif_height", mediaModel.preview_gif_height);
+        contentValues.put("fixed_width_downsampled_url", mediaModel.fixed_width_downsampled_url);
+        contentValues.put("fixed_width_downsampled_width", mediaModel.fixed_width_downsampled_width);
+        contentValues.put("fixed_width_downsampled_height", mediaModel.fixed_width_downsampled_height);
+        contentValues.put("fixed_height_downsampled_url", mediaModel.fixed_height_downsampled_url);
+        contentValues.put("fixed_height_downsampled_width", mediaModel.fixed_height_downsampled_width);
+        contentValues.put("fixed_height_downsampled_height", mediaModel.fixed_height_downsampled_height);
+        contentValues.put("position", mediaModel.position);
+        Log.d(TAG, "addFavoriteItem: " + mediaModel.title);
 
-                    @Override
-                    public void onFailure(Call<MediaResponse> call, Throwable t) {
-
-                    }
-                });
-        return dataPair.second;
+        sqLiteDatabase.insert(FAVORITE_TABLE,null, contentValues);
+        return true;
     }
 
-
+    public boolean removeFavoriteItem(MediaModel mediaModel){
+       return sqLiteDatabase.delete(FAVORITE_TABLE, "id LIKE \"" + mediaModel.id+ "\"", null) > 0;
+    }
 
 
 }

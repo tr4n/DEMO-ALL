@@ -71,7 +71,7 @@ public class RelatedAdapter extends RecyclerView.Adapter<RelatedAdapter.RelatedV
             int fixedWidth =  (int) (Resources.getSystem().getDisplayMetrics().widthPixels*0.4);
             int fixedHeight = (int) (Resources.getSystem().getDisplayMetrics().heightPixels*0.2);
             ivMedia.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            Utils.loadImageUrl(ivLoading, ivMedia,fixedWidth, fixedHeight,mediaModel.fixed_height_url, context );
+            Utils.loadImageUrl(ivLoading, ivMedia,fixedWidth, fixedHeight,mediaModel.fixed_height_downsampled_url, context );
 
 
             itemView.setOnClickListener(new View.OnClickListener() {

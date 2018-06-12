@@ -1,6 +1,8 @@
 package com.example.mypc.officaligif.utils;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.CountDownTimer;
@@ -89,23 +91,12 @@ public class Utils {
         }
     }
 
-    public static void refreshFragment(FragmentManager fragmentManager){
-
-    }
 
     public static int gerRandomResourceColor(){
         int position = (new Random()).nextInt(idColors.length);
         return idColors[position];
     }
 
-    public static void exitScreen(FragmentManager fragmentManager){
-       while(fragmentManager.getBackStackEntryCount() > 0){
-           fragmentManager.popBackStack();
-       }
-
-       openFragment(fragmentManager, R.id.cl_home_fragment, new HomeFragment());
-
-    }
 
     public static void loadImageUrl(final ImageView loadingView, final ImageView view, int width, int height, String url, Context context){
 
@@ -132,6 +123,12 @@ public class Utils {
                     }
                 }).into(view);
 
+    }
+
+    public static void copyClipBoard(String data,Context context) {
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText(null, data);
+        clipboard.setPrimaryClip(clipData);
     }
 
 

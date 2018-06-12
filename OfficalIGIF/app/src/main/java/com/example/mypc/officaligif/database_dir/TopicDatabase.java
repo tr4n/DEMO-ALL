@@ -1,10 +1,6 @@
-package com.example.mypc.officaligif.databases;
+package com.example.mypc.officaligif.database_dir;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 

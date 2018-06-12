@@ -226,40 +226,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    private void initializeBubblesManager() {
-        bubblesManager = new BubblesManager.Builder(getApplicationContext())
-                .setTrashLayout(R.layout.layout_bubble_trash)
-                .build();
-        bubblesManager.initialize();
-    }
-
-    private void addNewBubble() {
-        BubbleLayout bubbleView = (BubbleLayout) LayoutInflater.from(getApplicationContext()).inflate(R.layout.layout_bubbles, null);
-        bubbleView.setOnBubbleRemoveListener(new BubbleLayout.OnBubbleRemoveListener() {
-            @Override
-            public void onBubbleRemoved(BubbleLayout bubble) {
-            }
-        });
-        bubbleView.setOnBubbleClickListener(new BubbleLayout.OnBubbleClickListener() {
-
-            @Override
-            public void onBubbleClick(BubbleLayout bubble) {
-                // Intent intent = new Intent(MainActivity.this, MainActivity.this);
-
-                Toast.makeText(getApplicationContext(), "Clicked !",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-        bubbleView.setShouldStickToWall(true);
-        int WIDTH_SCREEN = Resources.getSystem().getDisplayMetrics().widthPixels;
-        bubblesManager.addBubble(bubbleView, 60, WIDTH_SCREEN);
-
-
-    }
-
     private void setSelectedFloatItem(View firstView, View secondView) {
         Utils.backFragment(getSupportFragmentManager(), 0);
-        int fixedWith = (int) (Resources.getSystem().getDisplayMetrics().widthPixels * 0.16);
+        int fixedWith = (int) (Resources.getSystem().getDisplayMetrics().widthPixels * 0.14);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 fixedWith,
                 fixedWith
@@ -282,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ivFloatFavorite.setPadding(padding, padding, padding, padding);
 
 
-        fixedWith = (int) (Resources.getSystem().getDisplayMetrics().widthPixels * 0.2);
+        fixedWith = (int) (Resources.getSystem().getDisplayMetrics().widthPixels * 0.16);
         layoutParams = new LinearLayout.LayoutParams(
                 fixedWith,
                 fixedWith

@@ -19,16 +19,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.mypc.officaligif.R;
 import com.example.mypc.officaligif.adapters.GridViewAdapter;
-import com.example.mypc.officaligif.databases.TopicDatabaseManager;
+import com.example.mypc.officaligif.database_dir.TopicDatabaseManager;
 import com.example.mypc.officaligif.messages.BackSticky;
 import com.example.mypc.officaligif.messages.SuggestTopicSticky;
 import com.example.mypc.officaligif.models.SuggestTopicModel;
 import com.example.mypc.officaligif.utils.Utils;
-import com.txusballesteros.bubbles.BubbleLayout;
 import com.txusballesteros.bubbles.BubblesManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -115,8 +113,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void Initialization() {
-        initializeBubblesManager();
-        List<SuggestTopicModel> suggestTopicModelList = TopicDatabaseManager.getInstance(getContext()).getSuggestTopicModelList();
+             List<SuggestTopicModel> suggestTopicModelList = TopicDatabaseManager.getInstance(getContext()).getSuggestTopicModelList();
         gridView.setAdapter(new GridViewAdapter(suggestTopicModelList, getContext()));
 
     }
@@ -128,33 +125,8 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private void initializeBubblesManager() {
-        bubblesManager = new BubblesManager.Builder(getContext())
-                .setTrashLayout(R.layout.layout_bubble_trash)
-                .build();
-        bubblesManager.initialize();
-    }
-
-    private void addNewBubble() {
-        BubbleLayout bubbleView = (BubbleLayout) LayoutInflater.from(getContext()).inflate(R.layout.layout_bubbles, null);
-        bubbleView.setOnBubbleRemoveListener(new BubbleLayout.OnBubbleRemoveListener() {
-            @Override
-            public void onBubbleRemoved(BubbleLayout bubble) {
-            }
-        });
-        bubbleView.setOnBubbleClickListener(new BubbleLayout.OnBubbleClickListener() {
-
-            @Override
-            public void onBubbleClick(BubbleLayout bubble) {
-                Toast.makeText(getContext(), "Clicked !",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-        bubbleView.setShouldStickToWall(true);
-        bubblesManager.addBubble(bubbleView, 60, 20);
 
 
-    }
 
 
     private void editSearch(boolean done, boolean searchTopic) {
@@ -221,7 +193,6 @@ public class HomeFragment extends Fragment {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_icon:
-                addNewBubble();
 
                 break;
             case R.id.iv_search_title:

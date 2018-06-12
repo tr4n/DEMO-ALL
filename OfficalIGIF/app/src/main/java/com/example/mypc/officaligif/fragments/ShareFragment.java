@@ -13,10 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.mypc.officaligif.R;
 import com.example.mypc.officaligif.adapters.RelatedAdapter;
+import com.example.mypc.officaligif.database_dir.TopicDatabaseManager;
 import com.example.mypc.officaligif.messages.BackSticky;
 import com.example.mypc.officaligif.messages.DataListSticky;
 import com.example.mypc.officaligif.messages.MediaSticky;
@@ -34,6 +34,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import es.dmoral.toasty.Toasty;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -78,6 +79,7 @@ public class ShareFragment extends Fragment {
     MediaModel mediaModel;
     DataListSticky dataListSticky;
     View infalteView;
+    Boolean favoriteMedia ;
     ImageView[] ivRelatedMedias = new ImageView[12];
     List<MediaModel> relatedList = new ArrayList<>();
 
@@ -135,10 +137,20 @@ public class ShareFragment extends Fragment {
                 Utils.backFragment(getFragmentManager(), classID);
                 break;
             case R.id.iv_copy_link:
+                Utils.copyClipBoard(mediaModel.original_url, getContext());
+                ImageView temporaryView = new ImageView(getContext());
+                temporaryView.setImageResource(R.drawable.ic_content_copy_white_24dp);
+                Toasty.normal(getContext(),"Copied link", temporaryView.getDrawable()).show();
                 break;
             case R.id.iv_facebook:
                 break;
             case R.id.iv_favorite:
+                if(TopicDatabaseManager.getInstance(getContext()).addFavoriteItem(mediaModel)){
+                    ivFavorite.setImageResource(R.drawable.ic_favorite_white_24dp);
+                    Toasty.normal(getContext(), "^^").show();
+                }else{
+
+                }
                 break;
             case R.id.iv_download:
                 break;
@@ -154,6 +166,8 @@ public class ShareFragment extends Fragment {
     }
 
     private void Initialization() {
+
+
         setExpanedRelatedList(false);
         if(titleFragment.contains(" GIF")){
             titleFragment = titleFragment.split("GIF")[0].trim();
@@ -176,6 +190,12 @@ public class ShareFragment extends Fragment {
     }
 
     private void setupUI() {
+        favoriteMedia = TopicDatabaseManager.getInstance(getContext()).inFavoriteList(mediaModel);
+        if(favoriteMedia){
+            ivFavorite.setImageResource(R.drawable.ic_favorite_white_24dp);
+        }else{
+            ivFavorite.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+        }
 
     }
 
