@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class TopicDatabaseManager {
+public class TopicDatabaseManager  {
     private static final String TAG = "TopicDatabaseManager";
 
     private static final String TABLE_MAIN = "main_topics";
@@ -365,6 +365,8 @@ public class TopicDatabaseManager {
     public boolean removeFavoriteItem(MediaModel mediaModel){
        return sqLiteDatabase.delete(FAVORITE_TABLE, "id LIKE \"" + mediaModel.id+ "\"", null) > 0;
     }
+
+
 
 
 }

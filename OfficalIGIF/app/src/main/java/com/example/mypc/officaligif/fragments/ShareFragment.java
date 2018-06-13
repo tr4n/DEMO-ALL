@@ -80,8 +80,7 @@ public class ShareFragment extends Fragment {
     DataListSticky dataListSticky;
     View infalteView;
     Boolean favoriteMedia ;
-    ImageView[] ivRelatedMedias = new ImageView[12];
-    List<MediaModel> relatedList = new ArrayList<>();
+
 
     public ShareFragment() {
         // Required empty public constructor

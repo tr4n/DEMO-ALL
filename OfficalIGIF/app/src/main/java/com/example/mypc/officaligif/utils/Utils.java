@@ -65,40 +65,56 @@ public class Utils {
                 .commit();
 
     }
-    public static void openFragmentTag(FragmentManager fragmentManager, int layoutID, Fragment fragment, String TAG){
+
+    public static void openFragmentTag(FragmentManager fragmentManager, int layoutID, Fragment fragment, String TAG) {
         fragmentManager.beginTransaction()
                 .add(layoutID, fragment)
                 .addToBackStack(TAG)
                 .commit();
     }
 
-    public static void replaceFragmentTag(FragmentManager fragmentManager, int layoutID, Fragment fragment, String TAG){
+    public static void replaceFragmentTag(FragmentManager fragmentManager, int layoutID, Fragment fragment, String TAG) {
         fragmentManager.beginTransaction()
                 .replace(layoutID, fragment)
                 .addToBackStack(TAG)
                 .commit();
     }
 
+    public static void refreshFragment(FragmentManager fragmentManager, String fragmentTag) {
+        Fragment fragment = null;
+        fragment = fragmentManager.findFragmentByTag(fragmentTag);
+        fragmentManager.beginTransaction()
+                .detach(fragment)
+                .attach(fragment)
+                .commit();
+    }
 
 
-    public static void backFragment(FragmentManager fragmentManager, int numberStep){
+    public static void backFragment(FragmentManager fragmentManager, int numberStep) {
 
-        while(fragmentManager.getBackStackEntryCount() > 0 ){
+
+        while (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
-            if(--numberStep < 0){
+            if (--numberStep < 0) {
                 break;
             }
         }
     }
 
 
-    public static int gerRandomResourceColor(){
+    public static int gerRandomResourceColor() {
         int position = (new Random()).nextInt(idColors.length);
         return idColors[position];
     }
 
+    public static Drawable getDrawableResource(int idResource, Context context){
+        ImageView temporaryImageView = new ImageView(context);
+        temporaryImageView.setImageResource(idResource);
+        return temporaryImageView.getDrawable();
+    }
 
-    public static void loadImageUrl(final ImageView loadingView, final ImageView view, int width, int height, String url, Context context){
+
+    public static void loadImageUrl(final ImageView loadingView, final ImageView view, int width, int height, String url, Context context) {
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width, height);
         loadingView.setLayoutParams(layoutParams);
@@ -125,15 +141,11 @@ public class Utils {
 
     }
 
-    public static void copyClipBoard(String data,Context context) {
+    public static void copyClipBoard(String data, Context context) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText(null, data);
         clipboard.setPrimaryClip(clipData);
     }
-
-
-
-
 
 
 }
