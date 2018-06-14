@@ -11,7 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.mypc.officaligif.R;
@@ -21,20 +23,19 @@ import com.example.mypc.officaligif.messages.BackSticky;
 import com.example.mypc.officaligif.messages.DataListSticky;
 import com.example.mypc.officaligif.messages.MediaSticky;
 import com.example.mypc.officaligif.models.MediaModel;
+import com.example.mypc.officaligif.utils.DownloadUtils;
 import com.example.mypc.officaligif.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import es.dmoral.toasty.Toasty;
+import pl.droidsonroids.gif.GifImageView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,10 +50,6 @@ public class ShareFragment extends Fragment {
     TextView tvTitleMedia;
     @BindView(R.id.iv_back)
     ImageView ivBack;
-    @BindView(R.id.iv_loading_sharing_media)
-    ImageView ivLoadingSharingMedia;
-    @BindView(R.id.iv_sharing_media)
-    ImageView ivSharingMedia;
     @BindView(R.id.tv_source)
     TextView tvSource;
     @BindView(R.id.iv_copy_link)
@@ -79,7 +76,20 @@ public class ShareFragment extends Fragment {
     MediaModel mediaModel;
     DataListSticky dataListSticky;
     View infalteView;
-    Boolean favoriteMedia ;
+    Boolean favoriteMedia;
+    @BindView(R.id.iv_messenger)
+    ImageView ivMessenger;
+    @BindView(R.id.linearLayout)
+    LinearLayout linearLayout;
+
+    @BindView(R.id.ll_share_buttons)
+    LinearLayout llShareButtons;
+    @BindView(R.id.scrollView2)
+    ScrollView scrollView2;
+    @BindView(R.id.iv_sharing_media)
+    GifImageView ivSharingMedia;
+    @BindView(R.id.iv_loading_sharing_media)
+    ImageView ivLoadingSharingMedia;
 
 
     public ShareFragment() {
@@ -129,7 +139,7 @@ public class ShareFragment extends Fragment {
         unbinder.unbind();
     }
 
-    @OnClick({R.id.iv_back, R.id.iv_copy_link, R.id.iv_facebook, R.id.iv_favorite, R.id.iv_download, R.id.rl_related_title})
+    @OnClick({R.id.iv_back, R.id.iv_copy_link, R.id.iv_facebook, R.id.iv_favorite, R.id.iv_download, R.id.rl_related_title, R.id.iv_messenger})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
@@ -139,19 +149,24 @@ public class ShareFragment extends Fragment {
                 Utils.copyClipBoard(mediaModel.original_url, getContext());
                 ImageView temporaryView = new ImageView(getContext());
                 temporaryView.setImageResource(R.drawable.ic_content_copy_white_24dp);
-                Toasty.normal(getContext(),"Copied link", temporaryView.getDrawable()).show();
+                Toasty.normal(getContext(), "Copied link", temporaryView.getDrawable()).show();
                 break;
             case R.id.iv_facebook:
+                Utils.shareFacebook(mediaModel, getActivity());
+            case R.id.iv_messenger:
+                Utils.shareMessenger(mediaModel, getActivity());
+
                 break;
             case R.id.iv_favorite:
-                if(TopicDatabaseManager.getInstance(getContext()).addFavoriteItem(mediaModel)){
+                if (TopicDatabaseManager.getInstance(getContext()).addFavoriteItem(mediaModel)) {
                     ivFavorite.setImageResource(R.drawable.ic_favorite_white_24dp);
-                    Toasty.normal(getContext(), "^^").show();
-                }else{
+                    Toasty.normal(getContext(), "", Utils.getDrawableResource(R.drawable.ic_favorite_white_24dp, getContext())).show();
+                } else {
 
                 }
                 break;
             case R.id.iv_download:
+                DownloadUtils.getInstance(getContext()).downloadMedia(mediaModel, getContext());
                 break;
             case R.id.rl_related_title:
                 setExpanedRelatedList(!isExpanded);
@@ -168,11 +183,11 @@ public class ShareFragment extends Fragment {
 
 
         setExpanedRelatedList(false);
-        if(titleFragment.contains(" GIF")){
+        if (titleFragment.contains(" GIF")) {
             titleFragment = titleFragment.split("GIF")[0].trim();
         }
 
-        tvTitleMedia.setText(titleFragment);
+        tvTitleMedia.setText(Utils.getBaseString(mediaModel.title));
         tvTitleMedia.setSelected(true);
         tvSource.setText("SOURCE: " + mediaModel.source_tld);
 
@@ -180,30 +195,30 @@ public class ShareFragment extends Fragment {
         int height = Integer.parseInt(mediaModel.original_height);
         int fixedWidth = WIDTH_SCREEN;
         int fixedHeight = (fixedWidth * height) / width;
-        Utils.loadImageUrl(ivLoadingSharingMedia, ivSharingMedia, fixedWidth, fixedHeight, mediaModel.fixed_width_url, getContext());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager( getContext());
+        DownloadUtils.getInstance(getContext()).load(ivSharingMedia, ivLoadingSharingMedia, fixedWidth, fixedHeight, mediaModel, getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        RelatedAdapter relatedAdapter = new RelatedAdapter(dataListSticky,classID, getContext());
+        RelatedAdapter relatedAdapter = new RelatedAdapter(dataListSticky, classID, getContext());
         rvRelatedItems.setLayoutManager(linearLayoutManager);
         rvRelatedItems.setAdapter(relatedAdapter);
     }
 
     private void setupUI() {
         favoriteMedia = TopicDatabaseManager.getInstance(getContext()).inFavoriteList(mediaModel);
-        if(favoriteMedia){
+        if (favoriteMedia) {
             ivFavorite.setImageResource(R.drawable.ic_favorite_white_24dp);
-        }else{
+        } else {
             ivFavorite.setImageResource(R.drawable.ic_favorite_border_white_24dp);
         }
 
     }
 
-    private void setExpanedRelatedList(boolean expanded){
+    private void setExpanedRelatedList(boolean expanded) {
         isExpanded = expanded;
-        if(expanded){
+        if (expanded) {
             rvRelatedItems.setVisibility(View.VISIBLE);
             ivExpanded.setImageResource(R.drawable.ic_keyboard_arrow_down_white_24dp);
-        }else{
+        } else {
             rvRelatedItems.setVisibility(View.GONE);
             ivExpanded.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp);
         }
@@ -219,11 +234,13 @@ public class ShareFragment extends Fragment {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                   Utils.backFragment(getFragmentManager(), classID);
+                    Utils.backFragment(getFragmentManager(), classID);
                     return true;
                 }
                 return false;
             }
         });
     }
+
+
 }

@@ -1,6 +1,5 @@
 package com.example.mypc.officaligif.activities;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
@@ -14,13 +13,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -28,14 +23,12 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.mypc.officaligif.R;
-import com.example.mypc.officaligif.adapters.ViewPagerAdapter;
-import com.example.mypc.officaligif.fragments.DownloadedFragment;
+import com.example.mypc.officaligif.fragments.DownloadFragment;
 import com.example.mypc.officaligif.fragments.FavoriteFragment;
 import com.example.mypc.officaligif.fragments.HomeFragment;
 import com.example.mypc.officaligif.messages.BackSticky;
 import com.example.mypc.officaligif.services.BubbleService;
 import com.example.mypc.officaligif.utils.Utils;
-import com.txusballesteros.bubbles.BubbleLayout;
 import com.txusballesteros.bubbles.BubblesManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -44,7 +37,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -160,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.iv_float_download:
                 setSelectedFloatItem(ivFloatDownload, ivUpdropDownload);
-                Utils.replaceFragmentTag(getSupportFragmentManager(), R.id.cl_main_activity, new DownloadedFragment(), "download_fragment");
+                Utils.replaceFragmentTag(getSupportFragmentManager(), R.id.cl_main_activity, new DownloadFragment(), "download_fragment");
                 break;
             case R.id.iv_float_home:
                 setSelectedFloatItem(ivFloatHome, ivUpdropHome);

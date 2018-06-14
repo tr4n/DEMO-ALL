@@ -34,10 +34,10 @@ public class MediaModel {
     public String fixed_height_downsampled_url;
     public String fixed_height_downsampled_width;
     public String fixed_height_downsampled_height;
+    public String original_mp4_url;
     public int position;
 
-    public MediaModel(String id, String original_url, String original_width, String original_height, String source_tld, String title, String caption, String fixed_height_url, String fixed_height_width, String fixed_height_height, String fixed_height_small_url, String fixed_height_small_width, String fixed_height_small_height, String fixed_width_url, String fixed_width_width, String fixed_width_height, String fixed_width_small_url, String fixed_width_small_width, String fixed_width_small_height, String fixed_width_still_url, String fixed_width_still_width, String fixed_width_still_height, String preview_gif_url, String preview_gif_width, String preview_gif_height, String fixed_width_downsampled_url, String fixed_width_downsampled_width, String fixed_width_downsampled_height, String fixed_height_downsampled_url, String fixed_height_downsampled_width, String fixed_height_downsampled_height, int position) {
-
+    public MediaModel(String id, String original_url, String original_width, String original_height, String source_tld, String title, String caption, String fixed_height_url, String fixed_height_width, String fixed_height_height, String fixed_height_small_url, String fixed_height_small_width, String fixed_height_small_height, String fixed_width_url, String fixed_width_width, String fixed_width_height, String fixed_width_small_url, String fixed_width_small_width, String fixed_width_small_height, String fixed_width_still_url, String fixed_width_still_width, String fixed_width_still_height, String preview_gif_url, String preview_gif_width, String preview_gif_height, String fixed_width_downsampled_url, String fixed_width_downsampled_width, String fixed_width_downsampled_height, String fixed_height_downsampled_url, String fixed_height_downsampled_width, String fixed_height_downsampled_height, String original_mp4_url, int position) {
         if(title != null){
             if(title.contains(" GIF")){
                 title = title.split(" GIF")[0].trim();
@@ -50,8 +50,6 @@ public class MediaModel {
                 }
             }
         }
-
-
         this.id = id;
         this.original_url = original_url;
         this.original_width = original_width;
@@ -83,10 +81,10 @@ public class MediaModel {
         this.fixed_height_downsampled_url = fixed_height_downsampled_url;
         this.fixed_height_downsampled_width = fixed_height_downsampled_width;
         this.fixed_height_downsampled_height = fixed_height_downsampled_height;
+        this.original_mp4_url = original_mp4_url;
         this.position = position;
-
-
     }
+
 
     public MediaModel() {
     }

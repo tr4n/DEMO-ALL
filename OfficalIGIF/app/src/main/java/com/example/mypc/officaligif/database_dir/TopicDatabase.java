@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 public class TopicDatabase extends SQLiteAssetHelper {
-    private static final String DATABASE_NAME = "igif_topics.db";
+    private static final String DATABASE_NAME = "igif_2.db";
     private static final int DATABASE_VERSION = 1;
 
 

@@ -4,52 +4,60 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:elevation="4dp"
-    android:background="#000"
+    android:background="#000000"
     android:clickable="true"
+    android:elevation="4dp"
     tools:context=".fragments.ShareFragment">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/constraintLayout"
+    <View
+        android:id="@+id/v_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_weight="1"
+        android:background="@color/colorLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#fff"
         android:elevation="4dp"
+        android:gravity="center"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:src="@drawable/ic_arrow_back_red_24dp" />
 
         <TextView
             android:id="@+id/tv_title_media"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="56dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginEnd="55dp"
             android:ellipsize="marquee"
-            android:padding="8dp"
-            android:textAllCaps="true"
             android:singleLine="true"
             android:text="Title"
             android:textAlignment="center"
+            android:textAllCaps="false"
             android:textColor="#ff00"
             android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/iv_back"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textStyle="bold" />
 
-        <ImageView
-            android:id="@+id/iv_back"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="2dp"
-            android:src="@drawable/ic_arrow_back_red_24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </android.support.constraint.ConstraintLayout>
+
+    </LinearLayout>
+
 
     <ScrollView
         android:id="@+id/scrollView2"
@@ -57,13 +65,16 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+        app:layout_constraintTop_toBottomOf="@+id/v_line"
+        app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -75,17 +86,17 @@
                     android:id="@+id/iv_loading_sharing_media"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
                     android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
                     android:scaleType="centerCrop"
                     android:src="@drawable/blue" />
 
-                <ImageView
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentStart="true"
+                <pl.droidsonroids.gif.GifImageView
                     android:id="@+id/iv_sharing_media"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
                     android:src="@drawable/igif"
                     android:visibility="gone" />
 
@@ -98,7 +109,7 @@
                 android:padding="8dp"
                 android:text="SOURCE: https://fb.com/quanghuytran.hust"
                 android:textAllCaps="true"
-                android:textColor="#fff"
+                android:textColor="#ffffff"
                 android:textSize="12sp" />
 
             <LinearLayout
@@ -137,6 +148,12 @@
                     android:layout_height="40dp"
                     android:layout_margin="8dp"
                     android:src="@drawable/ic_file_download_black_24dp" />
+                <ImageView
+                    android:id="@+id/iv_messenger"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/messenger_bubble_large_white"/>
 
 
             </LinearLayout>
@@ -164,9 +181,9 @@
             android:elevation="1dp">
 
             <TextView
-                android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_margin="8dp"
                 android:text="RELATED"
                 android:textAllCaps="true"

@@ -89,13 +89,13 @@ public class SearchFragment extends Fragment {
         EventBus.getDefault().register(this);
 
 
-
         Definition();
         Initialization();
         setupUI();
 
         return view;
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void getTopicMessager(SuggestTopicSticky suggestTopicSticky) {
         tvKey.setText(suggestTopicSticky.topic);
@@ -161,15 +161,14 @@ public class SearchFragment extends Fragment {
                     @Override
                     public void onResponse(Call<MediaResponse> call, final Response<MediaResponse> response) {
                         if (response.body() == null || response.body().pagination.count == 0 || response.body().data.isEmpty()) {
-                            if(response.body().pagination.count == 0){
+                            if (response.body().pagination.count == 0) {
                                 tvNumberResults.setText("There isn't any results for " + responseModel.key);
-                                if(rlAvi != null){
+                                if (rlAvi != null) {
                                     rlAvi.setVisibility(View.GONE);
                                 }
                             }
                             return;
                         }
-
 
 
                         final List<MediaModel> mediaModelList = new ArrayList<>();
@@ -209,6 +208,7 @@ public class SearchFragment extends Fragment {
                                     dataJSON.images.fixed_height_downsampled.url,
                                     dataJSON.images.fixed_height_downsampled.width,
                                     dataJSON.images.fixed_height_downsampled.height,
+                                    dataJSON.images.original_mp4.mp4,
                                     position++
                             );
                             mediaModelList.add(mediaModel);
@@ -217,8 +217,8 @@ public class SearchFragment extends Fragment {
 
                         dataListSticky = new DataListSticky(mediaModelList);
                         searchedAdapter = new SearchedAdapter(dataListSticky, getContext());
-                        if(searchedAdapter!= null)
-                        rvSearchedItems.setAdapter(searchedAdapter);
+                        if (searchedAdapter != null)
+                            rvSearchedItems.setAdapter(searchedAdapter);
                         tvNumberResults.setText(response.body().pagination.total_count + " results");
                         tvNumberResults.setVisibility(View.GONE);
                         setLoadMoreItems();
@@ -229,7 +229,7 @@ public class SearchFragment extends Fragment {
                     @Override
                     public void onFailure(Call<MediaResponse> call, Throwable t) {
                         tvNumberResults.setText("There isn't any results for " + responseModel.key);
-                        if(rlAvi != null){
+                        if (rlAvi != null) {
                             rlAvi.setVisibility(View.GONE);
                         }
                         Toasty.normal(getContext(), "No Internet!").show();
@@ -277,11 +277,10 @@ public class SearchFragment extends Fragment {
                         searchedAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
                             @Override
                             public void onItemRangeInserted(int positionStart, int itemCount) {
-                               // super.onItemRangeInserted(positionStart, itemCount);
-                                staggeredGridLayoutManager.smoothScrollToPosition(rvSearchedItems,null,positionStart + 5);
+                                // super.onItemRangeInserted(positionStart, itemCount);
+                                staggeredGridLayoutManager.smoothScrollToPosition(rvSearchedItems, null, positionStart + 5);
                             }
                         });
-
 
 
                     }

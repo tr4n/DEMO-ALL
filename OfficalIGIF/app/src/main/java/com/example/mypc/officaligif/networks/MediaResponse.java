@@ -25,8 +25,9 @@ public class MediaResponse {
             public FixedHeightSmallJSON fixed_height_small;
             public FixedWidthSmallJSON fixed_width_small;
             public FixedWidthStillJSON fixed_width_still;
-            public FixedWidthDownsampled fixed_width_downsampled;
-            public FixedHeightDownsampled fixed_height_downsampled;
+            public FixedWidthDownsampledJSON fixed_width_downsampled;
+            public FixedHeightDownsampledJSON fixed_height_downsampled;
+            public OriginalMp4JSON original_mp4;
 
             public class FixedHeightJSON{
                 public String url;
@@ -79,17 +80,21 @@ public class MediaResponse {
 
             }
 
-            public class FixedWidthDownsampled{
+            public class FixedWidthDownsampledJSON{
                 public String url;
                 public String width;
                 public String height;
                 public String size;
             }
-            public class FixedHeightDownsampled{
+            public class FixedHeightDownsampledJSON{
                 public String url;
                 public String width;
                 public String height;
                 public String size;
+            }
+
+            public class OriginalMp4JSON{
+                public String mp4;
             }
         }
     }

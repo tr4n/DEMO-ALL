@@ -3,49 +3,47 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_home_fragment"
-    android:background="#000"
-    android:clickable="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#cac6c6"
+    android:clickable="true"
     tools:context=".fragments.HomeFragment">
 
     <LinearLayout
 
-        android:elevation="8dp"
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#fff"
+        android:clipToPadding="false"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <RelativeLayout
-            android:elevation="2dp"
+            android:clipToPadding="true"
             android:id="@+id/rl_title"
+            android:layout_marginBottom="2dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#fff"
-            >
+            android:background="#fff">
 
             <ImageView
-                android:id="@+id/iv_icon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:padding="2dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-              
-
-                android:src="@drawable/igif" />
+                android:padding="6dp"
+                android:background="@drawable/background_red_round"
+                android:src="@drawable/ic_home_white_24dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:fontFamily="casual"
-                android:text="iGIF"
+                android:fontFamily="serif-monospace"
+                android:text="i G I F"
                 android:textColor="#ff00"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -54,19 +52,21 @@
                 android:id="@+id/iv_search_title"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
                 android:padding="2dp"
-                android:layout_alignParentEnd="true"              
                 android:src="@drawable/ic_search_black_24dp" />
         </RelativeLayout>
+
         <LinearLayout
-            android:elevation="2dp"
-            android:orientation="horizontal"
             android:id="@+id/title_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#45ffffff"
-            android:weightSum="10"
-            android:visibility="visible">
+            android:orientation="horizontal"
+            android:visibility="visible"
+            android:layout_marginBottom="2dp"
+            android:weightSum="10">
+
             <ImageView
                 android:id="@+id/iv_back"
                 android:layout_width="40dp"
@@ -75,12 +75,12 @@
                 android:src="@drawable/ic_arrow_red_48dp" />
 
             <EditText
-                android:layout_weight="8"
                 android:id="@+id/et_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_toStartOf="@id/iv_search"
+                android:layout_weight="8"
                 android:background="@android:color/transparent"
                 android:hint="Search all topics"
                 android:imeOptions="actionSearch"
@@ -91,22 +91,26 @@
 
 
             <ImageView
-                android:layout_weight="1"
                 android:id="@+id/iv_search"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_weight="1"
                 android:padding="2dp"
                 android:src="@drawable/ic_search_black_24dp" />
 
 
         </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorLine"/>
     </LinearLayout>
 
     <GridView
         android:id="@+id/grid_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="#000"
+
         android:numColumns="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

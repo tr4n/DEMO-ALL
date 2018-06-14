@@ -8,4 +8,5 @@ public interface iGIPHYService {
     @GET("search")
     Call<MediaResponse> getMediaResponses(@Query("q") String key,@Query("lang") String language, @Query("limit") Integer limit, @Query("api_key") String apiKey);
 
+
 }

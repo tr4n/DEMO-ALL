@@ -2,9 +2,11 @@ package com.example.mypc.officaligif.fragments;
 
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -45,8 +47,7 @@ import butterknife.Unbinder;
 public class HomeFragment extends Fragment {
 
 
-    @BindView(R.id.iv_icon)
-    ImageView ivIcon;
+
     @BindView(R.id.iv_search_title)
     ImageView ivSearchTitle;
     @BindView(R.id.rl_title)
@@ -96,6 +97,7 @@ public class HomeFragment extends Fragment {
     }
 
 
+
     private void setupUI() {
         editSearch(true, false);
         etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -108,6 +110,7 @@ public class HomeFragment extends Fragment {
                 return false;
             }
         });
+
 
 
     }
@@ -189,12 +192,9 @@ public class HomeFragment extends Fragment {
         Utils.replaceFragment(getFragmentManager(), R.id.cl_main_activity, new SearchFragment());
     }
 
-    @OnClick({R.id.iv_icon, R.id.iv_search_title, R.id.iv_back, R.id.iv_search})
+    @OnClick({R.id.iv_search_title, R.id.iv_back, R.id.iv_search})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.iv_icon:
-
-                break;
             case R.id.iv_search_title:
                 editSearch(false, false);
                 break;

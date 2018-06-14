@@ -270,7 +270,8 @@ public class TopicDatabaseManager  {
             String fixed_height_downsampled_url = cursor.getString(28);
             String fixed_height_downsampled_width = cursor.getString(29);
             String fixed_height_downsampled_height = cursor.getString(30);
-            int position = cursor.getInt(31);
+            String original_mp4_url = cursor.getString(31);
+            int position = cursor.getInt(32);
 
             MediaModel mediaModel = new MediaModel(
                     id,
@@ -304,6 +305,7 @@ public class TopicDatabaseManager  {
                     fixed_height_downsampled_url,
                     fixed_height_downsampled_width,
                     fixed_height_downsampled_height,
+                    original_mp4_url,
                     position
             );
             
@@ -317,7 +319,8 @@ public class TopicDatabaseManager  {
     
     public boolean inFavoriteList(MediaModel mediaModel){
         Cursor cursor = sqLiteDatabase.rawQuery(" select * from " + FAVORITE_TABLE + " where id LIKE \"" + mediaModel.id+"\"", null);
-        return (cursor.getCount() > 0); 
+
+        return (cursor.getCount() > 0);
     }
     
     public boolean addFavoriteItem(MediaModel mediaModel){
@@ -355,6 +358,7 @@ public class TopicDatabaseManager  {
         contentValues.put("fixed_height_downsampled_url", mediaModel.fixed_height_downsampled_url);
         contentValues.put("fixed_height_downsampled_width", mediaModel.fixed_height_downsampled_width);
         contentValues.put("fixed_height_downsampled_height", mediaModel.fixed_height_downsampled_height);
+        contentValues.put("original_mp4", mediaModel.original_mp4_url);
         contentValues.put("position", mediaModel.position);
         Log.d(TAG, "addFavoriteItem: " + mediaModel.title);
 
@@ -364,6 +368,21 @@ public class TopicDatabaseManager  {
 
     public boolean removeFavoriteItem(MediaModel mediaModel){
        return sqLiteDatabase.delete(FAVORITE_TABLE, "id LIKE \"" + mediaModel.id+ "\"", null) > 0;
+    }
+
+    public List<String>  getHistorySearchList(){
+         List<String> historySearchList = new ArrayList<>();
+         Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + SEARCHED_TOPICS + " order by searching_times", null);
+         int countAll = cursor.getCount();
+         cursor.moveToFirst();
+         int pointer = 0;
+         while((pointer++) < Math.min(countAll, 15)){
+             historySearchList.add(cursor.getString(1));
+             cursor.moveToNext();
+         }
+
+         return historySearchList;
+
     }
 
 

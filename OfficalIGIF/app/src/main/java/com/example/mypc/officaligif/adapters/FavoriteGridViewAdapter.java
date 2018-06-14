@@ -56,9 +56,6 @@ public class FavoriteGridViewAdapter extends BaseAdapter {
         Utils.loadImageUrl(ivLoadingMedia, ivMedia, fixedWidth, fixedWidth, mediaModel.fixed_width_downsampled_url, context);
         tvTitle.setText(mediaModel.title);
         tvTitle.setSelected(true);
-
-
-
         return convertView;
     }
 }
