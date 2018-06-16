@@ -3,6 +3,7 @@ package com.example.mypc.officaligif.activities;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -61,7 +62,7 @@ public class ViewerActivity extends AppCompatActivity {
     MediaModel mediaModel;
     @BindView(R.id.iv_zoom)
     ImageView ivZoom;
-    ScaleGestureDetector scaleGestureDetector;
+    GestureDetector gestureDetector;
 
     boolean isZoomed = false;
     int width =200;
@@ -107,11 +108,13 @@ public class ViewerActivity extends AppCompatActivity {
     }
 
     public void Definition() {
+        gestureDetector = new GestureDetector(this, new MyGesture());
         isZoomed = false;
-        scaleGestureDetector = new ScaleGestureDetector(this, new MyGesture());
+
     }
 
     public void Initialization() {
+
         if (viewSticky != null) {
             if (viewSticky.TAG == 1) {
                 llShareButtons.setVisibility(View.GONE);
@@ -141,13 +144,14 @@ public class ViewerActivity extends AppCompatActivity {
     }
 
     public void setupUI() {
-        llViewer.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                scaleGestureDetector.onTouchEvent(event);
-                return true;
-            }
-        });
+        setZoom();
+       givMedia.setOnTouchListener(new View.OnTouchListener() {
+           @Override
+           public boolean onTouch(View v, MotionEvent event) {
+               gestureDetector.onTouchEvent(event);
+               return true;
+           }
+       });
 
     }
 
@@ -179,18 +183,8 @@ public class ViewerActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.iv_zoom:
-                if (givMedia.getVisibility() == View.GONE) break;
-                if (isZoomed) {
-
-                    givMedia.setLayoutParams(getZoomLayoutParams(width, height, false));
-                    isZoomed = false;
-                    ivZoom.setImageResource(R.drawable.ic_zoom_in_white_24dp);
-                } else {
-                    givMedia.setLayoutParams(getZoomLayoutParams(width, height, true));
-                    isZoomed = true;
-                    ivZoom.setImageResource(R.drawable.ic_zoom_out_white_24dp);
-                }
-                break;
+               setZoom();
+               break;
 
         }
     }
@@ -203,30 +197,27 @@ public class ViewerActivity extends AppCompatActivity {
 
     }
 
+    public void setZoom(){
+        if (givMedia.getVisibility() == View.GONE) return;
+        if (isZoomed) {
 
-    class MyGesture extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-        float scale = 1.0F;
-
-
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            scale *= detector.getScaleFactor();
-           if(width*scale > widthScreen || height * heightScreen > heightScreen) return false;
-            givMedia.setLayoutParams(new LinearLayout.LayoutParams((int)(width*scale), (int)(height*scale)));
-
-            return true;
-           // return super.onScale(detector);
+            givMedia.setLayoutParams(getZoomLayoutParams(width, height, false));
+            isZoomed = false;
+            ivZoom.setImageResource(R.drawable.ic_zoom_in_white_24dp);
+        } else {
+            givMedia.setLayoutParams(getZoomLayoutParams(width, height, true));
+            isZoomed = true;
+            ivZoom.setImageResource(R.drawable.ic_zoom_out_white_24dp);
         }
 
-        @Override
-        public boolean onScaleBegin(ScaleGestureDetector detector) {
-           // givMedia.setLayoutParams(layoutParams);
-            return super.onScaleBegin(detector);
-        }
+    }
 
+
+    class MyGesture extends GestureDetector.SimpleOnGestureListener{
         @Override
-        public void onScaleEnd(ScaleGestureDetector detector) {
-                  super.onScaleEnd(detector);
+        public boolean onDoubleTap(MotionEvent e) {
+            setZoom();
+            return super.onDoubleTap(e);
         }
     }
 }

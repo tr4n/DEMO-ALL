@@ -174,9 +174,9 @@ public class ShareFragment extends Fragment {
                 break;
             case R.id.iv_facebook:
                 Utils.shareFacebook(mediaModel, getActivity());
+                break;
             case R.id.iv_messenger:
                 Utils.shareMessenger(mediaModel, getActivity());
-
                 break;
             case R.id.iv_favorite:
                 if (TopicDatabaseManager.getInstance(getContext()).addFavoriteItem(mediaModel)) {

@@ -1,11 +1,11 @@
 package com.example.mypc.officaligif.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +84,8 @@ public class FavoriteGridViewAdapter extends BaseAdapter {
             public void onClick(View v) {
                 tvTitle.setTextColor(Color.RED);
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setIcon(Utils.getDrawableResource(R.drawable.bubbletrash, context))
+                builder
+                        .setIcon(Utils.getDrawableResource(R.drawable.bubbletrash, context))
                         .setTitle("Remove from favorites")
                         .setMessage("Do you want to remove this item from your favorites?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {

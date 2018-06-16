@@ -23,6 +23,7 @@ public class SpeedyStaggeredGridLayoutManager extends StaggeredGridLayoutManager
 
     @Override
     public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
+        if(recyclerView == null) return ;
         final LinearSmoothScroller linearSmoothScroller = new LinearSmoothScroller(recyclerView.getContext()) {
 
             @Override

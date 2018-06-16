@@ -29,6 +29,9 @@ public class DownloadUtils {
 
     public Context context;
     private static DownloadUtils downloadUtils;
+    private final String pathFolderDownload ;
+    private final String pathFolderLoading;
+
 
     public static DownloadUtils getInstance(Context context) {
         if (downloadUtils == null) {
@@ -39,11 +42,13 @@ public class DownloadUtils {
 
     public DownloadUtils(Context context) {
         this.context = context;
+        this.pathFolderDownload = context.getExternalCacheDir() + "/iGIF/downloadss";
+        this.pathFolderLoading = context.getExternalCacheDir() + "/iGIF/preLoading";
     }
 
     public void downloadMedia(MediaModel mediaModel, final Context context) {
 
-        File folder = new File(context.getExternalCacheDir() + "/iGIF/downloads");
+        File folder = new File(pathFolderDownload);
         if (!folder.exists()) {
             folder.mkdirs();
         }
@@ -55,7 +60,7 @@ public class DownloadUtils {
         }
 
         Uri downloadUri = Uri.parse(mediaModel.original_url);
-        Uri destinationUri = Uri.parse(context.getExternalCacheDir() + "/iGIF/downloads/" + nameFile);
+        Uri destinationUri = Uri.parse(pathFolderDownload+ "/" +nameFile);
         DownloadRequest downloadRequest = new DownloadRequest(downloadUri)
                 .setDownloadContext(context)
                 .setRetryPolicy(new DefaultRetryPolicy())
@@ -77,9 +82,8 @@ public class DownloadUtils {
 
                     }
                 });
-        Log.d(TAG, "downloadMedia: predownload");
         new ThinDownloadManager().add(downloadRequest);
-        Log.d(TAG, "downloadMedia: " + "download ThinDownLoadManager");
+
     }
 
 
@@ -95,14 +99,14 @@ public class DownloadUtils {
         gifImageView.setVisibility(View.GONE);
         final String nameFile = mediaModel.original_width + "---"+mediaModel.original_height+ "---" + mediaModel.id + "-iGIF.GIF";
 
-        File folder = new File(context.getExternalCacheDir() + "/iGIF/preLoading");
+        File folder = new File(pathFolderLoading);
         if (!folder.exists()) {
             folder.mkdirs();
         }
         File downloadFile = new File(folder, nameFile);
         if (downloadFile.exists()) {
             try {
-                gifImageView.setImageDrawable(new GifDrawable(context.getExternalCacheDir() + "/iGIF/preLoading/" + nameFile));
+                gifImageView.setImageDrawable(new GifDrawable(pathFolderLoading + "/" + nameFile));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -113,7 +117,7 @@ public class DownloadUtils {
 
         Uri downloadUri = Uri.parse(mediaModel.original_url);
 
-        Uri destinationUri = Uri.parse(context.getExternalCacheDir() + "/iGIF/preLoading/" + nameFile);
+        Uri destinationUri = Uri.parse(pathFolderLoading + "/" + nameFile);
         DownloadRequest downloadRequest = new DownloadRequest(downloadUri)
                 .setDownloadContext(context)
                 .setRetryPolicy(new DefaultRetryPolicy())
@@ -123,7 +127,7 @@ public class DownloadUtils {
                     @Override
                     public void onDownloadComplete(int id) {
                         try {
-                            gifImageView.setImageDrawable(new GifDrawable(context.getExternalCacheDir() + "/iGIF/preLoading/" + nameFile));
+                            gifImageView.setImageDrawable(new GifDrawable(pathFolderLoading + "/"+ nameFile));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -146,7 +150,7 @@ public class DownloadUtils {
 
     public List<File> getDownloadedFile(Context context) {
         List<File> fileList = new ArrayList<>();
-        File folder = new File(context.getExternalCacheDir() + "/iGIF/downloads");
+        File folder = new File(pathFolderDownload);
         if (!folder.exists()) folder.mkdirs();
         if (folder.listFiles() == null) return null;
         for (File file : folder.listFiles()) {

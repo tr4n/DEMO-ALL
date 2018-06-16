@@ -4,22 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clickable="true"
     android:background="#c58e7e7e"
+    android:clickable="true"
     android:orientation="vertical"
     tools:context=".activities.MainActivity">
 
     <LinearLayout
-        android:layout_gravity="right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:elevation="2dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
+
         <LinearLayout
-            android:layout_gravity="center_vertical"
-            android:elevation="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginHorizontal="4dp"
             android:gravity="center"
             android:orientation="vertical">
@@ -31,6 +32,7 @@
                 android:src="@drawable/igif" />
 
             <ImageView
+
                 android:id="@+id/iv_updrop_float"
                 android:layout_width="12dp"
                 android:layout_height="6dp"
@@ -40,10 +42,9 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_gravity="center_vertical"
-            android:elevation="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginHorizontal="4dp"
             android:gravity="center"
             android:orientation="vertical">
@@ -65,12 +66,12 @@
                 android:visibility="gone" />
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="4dp"
             android:gravity="center"
-            android:elevation="6dp"
             android:orientation="vertical">
 
             <ImageView
@@ -92,16 +93,14 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_gravity="center_vertical"
-            android:elevation="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginHorizontal="4dp"
             android:gravity="center"
             android:orientation="vertical">
 
             <ImageView
-                android:elevation="6dp"
                 android:id="@+id/iv_float_favorite"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
@@ -110,7 +109,6 @@
                 android:src="@drawable/ic_favorite_white_24dp" />
 
             <ImageView
-
                 android:id="@+id/iv_updrop_favorite"
                 android:layout_width="12dp"
                 android:layout_height="6dp"
@@ -123,17 +121,17 @@
     </LinearLayout>
 
     <View
-        android:elevation="6dp"
         android:layout_width="match_parent"
         android:layout_height="4dp"
-        android:background="@drawable/background_white_subround_concern" />
+        android:background="@drawable/background_white_subround_concern"
+       android:elevation="2dp" />
 
     <android.support.constraint.ConstraintLayout
-        android:elevation="6dp"
+        android:elevation="2dp"
         android:id="@+id/cl_main_activity"
         android:layout_width="match_parent"
-        android:background="#fff"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#fff">
 
         <ImageView
             android:layout_width="match_parent"

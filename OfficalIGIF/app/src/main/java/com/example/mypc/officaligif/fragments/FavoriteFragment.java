@@ -81,35 +81,6 @@ public class FavoriteFragment extends Fragment {
     }
 
     private void setupUI() {
-        gvFavorites.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setIcon(Utils.getDrawableResource(R.drawable.bubbletrash, getContext()))
-                        .setTitle("Remove from favorites")
-                        .setMessage("Do you want to remove this item from your favorites?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Toast.makeText(getContext(), "removed! ", Toast.LENGTH_SHORT).show();
-                                TopicDatabaseManager.getInstance(getContext()).removeFavoriteItem(favoriteList.get(position));
-                                favoriteList = TopicDatabaseManager.getInstance(getContext()).getFavoriteList();
-                                favoriteGridViewAdapter.notifyDataSetChanged();
-                                Utils.replaceFragmentTag(getFragmentManager(), R.id.cl_main_activity, new FavoriteFragment(), "favorite_fragment");
-                         //       Utils.refreshFragment(getFragmentManager(), "favorite_fragment");
-
-                            }
-                        })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                            }
-                        })
-                        .show();
-                return true;
-            }
-        });
 
     }
 
