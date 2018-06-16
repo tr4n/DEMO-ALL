@@ -3,14 +3,15 @@ package com.example.mypc.officaligif.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 
 import com.example.mypc.officaligif.R;
 import com.example.mypc.officaligif.adapters.DownloadGridViewAdapter;
+import com.example.mypc.officaligif.adapters.DownloadRecyclerViewAdapter;
 import com.example.mypc.officaligif.utils.DownloadUtils;
 
 import java.io.File;
@@ -21,19 +22,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-import static com.facebook.internal.FacebookDialogFragment.TAG;
-
 /**
  * A simple {@link Fragment} subclass.
  */
 public class DownloadFragment extends Fragment {
 
 
-    @BindView(R.id.gv_downloads)
-    GridView gvDownloads;
     Unbinder unbinder;
 
     List<File> downloadList = new ArrayList<>();
+    @BindView(R.id.rv_downloads)
+    RecyclerView rvDownloads;
 
     public DownloadFragment() {
         // Required empty public constructor
@@ -51,7 +50,6 @@ public class DownloadFragment extends Fragment {
         setupUI();
 
 
-
         return view;
     }
 
@@ -61,15 +59,19 @@ public class DownloadFragment extends Fragment {
         unbinder.unbind();
     }
 
-    public void Definition(){
+    public void Definition() {
 
     }
 
-    public void Initialization(){
+    public void Initialization() {
         downloadList = DownloadUtils.getInstance(getContext()).getDownloadedFile(getContext());
-        gvDownloads.setAdapter(new DownloadGridViewAdapter(downloadList, getContext()));
+        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2,1);
+        rvDownloads.setLayoutManager(staggeredGridLayoutManager);
+        rvDownloads.setAdapter(new DownloadRecyclerViewAdapter(downloadList, getContext()));
+
     }
-    public void setupUI(){
+
+    public void setupUI() {
 
     }
 }

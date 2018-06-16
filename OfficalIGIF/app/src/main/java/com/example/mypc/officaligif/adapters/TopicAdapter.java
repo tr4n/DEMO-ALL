@@ -85,8 +85,8 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
             //  Utils.setTopicModelData(itemView, suggestTopicModel, position, context);
             final TopicModel topicModel = suggestTopicModel.topicList.get(position);
             int widthScreen = Resources.getSystem().getDisplayMetrics().widthPixels;
-            int width = (int) (widthScreen * 0.4);
-            int height = (int) (widthScreen * 0.3);
+            int width = (int) (widthScreen * 0.6);
+            int height = (int) (widthScreen * 0.4);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width, height);
             ivLoadingTopic.setLayoutParams(layoutParams);
             ivLoadingTopic.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -125,10 +125,11 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
 
                     EventBus.getDefault().postSticky(new SuggestTopicSticky(topicModel.key));
 
-                    Utils.openFragment(
+                    Utils.replaceFragmentTag(
                             ( (MainActivity) context).getSupportFragmentManager(),
-                            R.id.cl_home_fragment,
-                            new SearchFragment()
+                            R.id.cl_main_activity,
+                            new SearchFragment(),
+                            "search_fragment_base"
                     );
 
                 }

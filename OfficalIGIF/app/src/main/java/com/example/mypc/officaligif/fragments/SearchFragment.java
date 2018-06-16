@@ -217,12 +217,12 @@ public class SearchFragment extends Fragment {
 
                         dataListSticky = new DataListSticky(mediaModelList);
                         searchedAdapter = new SearchedAdapter(dataListSticky, getContext());
-                        if (searchedAdapter != null)
+                        if (searchedAdapter != null && rvSearchedItems != null && tvNumberResults != null){
                             rvSearchedItems.setAdapter(searchedAdapter);
-                        tvNumberResults.setText(response.body().pagination.total_count + " results");
-                        tvNumberResults.setVisibility(View.GONE);
-                        setLoadMoreItems();
-
+                            tvNumberResults.setText(response.body().pagination.total_count + " results");
+                            tvNumberResults.setVisibility(View.GONE);
+                            setLoadMoreItems();
+                        }
 
                     }
 

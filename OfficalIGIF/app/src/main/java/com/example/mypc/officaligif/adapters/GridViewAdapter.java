@@ -71,10 +71,11 @@ public class GridViewAdapter extends BaseAdapter {
 
                 EventBus.getDefault().postSticky(new SuggestTopicSticky(suggestTopicModel.key));
 
-                Utils.openFragment(
+                Utils.replaceFragmentTag(
                         ( (MainActivity) context).getSupportFragmentManager(),
-                        R.id.cl_home_fragment,
-                        new SearchFragment()
+                        R.id.cl_main_activity,
+                        new SearchFragment(),
+                        "search_fragment_base"
                 );
             }
         });

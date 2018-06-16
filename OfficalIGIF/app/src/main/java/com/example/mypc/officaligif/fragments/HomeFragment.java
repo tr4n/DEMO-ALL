@@ -33,6 +33,7 @@ import com.txusballesteros.bubbles.BubblesManager;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -117,7 +118,12 @@ public class HomeFragment extends Fragment {
 
     private void Initialization() {
              List<SuggestTopicModel> suggestTopicModelList = TopicDatabaseManager.getInstance(getContext()).getSuggestTopicModelList();
-        gridView.setAdapter(new GridViewAdapter(suggestTopicModelList, getContext()));
+             List<SuggestTopicModel> filterTopicList = new ArrayList<>();
+             filterTopicList.add(suggestTopicModelList.get(0));
+             filterTopicList.add(suggestTopicModelList.get(1));
+             filterTopicList.add(suggestTopicModelList.get(4));
+             filterTopicList.add(suggestTopicModelList.get(5));
+        gridView.setAdapter(new GridViewAdapter(filterTopicList, getContext()));
 
     }
 

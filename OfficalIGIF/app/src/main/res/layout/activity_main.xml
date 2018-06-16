@@ -54,7 +54,7 @@
                 android:layout_height="50dp"
                 android:background="@drawable/background_round"
                 android:padding="15dp"
-                android:src="@drawable/ic_restore_white_24dp" />
+                android:src="@drawable/ic_file_download_black_24dp" />
 
             <ImageView
                 android:id="@+id/iv_updrop_download"
@@ -120,11 +120,6 @@
 
         </LinearLayout>
 
-
-
-
-
-
     </LinearLayout>
 
     <View
@@ -137,7 +132,34 @@
         android:elevation="6dp"
         android:id="@+id/cl_main_activity"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.constraint.ConstraintLayout>
+        android:background="#fff"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:src="#fff"
+            app:layout_constraintBottom_toTopOf="@+id/textView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="casual"
+            android:gravity="center"
+            android:text="Press Back to exit"
+            android:textAlignment="center"
+            android:textColor="#000"
+            android:textSize="14sp"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
 
 
 </LinearLayout>

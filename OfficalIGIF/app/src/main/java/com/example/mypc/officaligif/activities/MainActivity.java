@@ -37,11 +37,13 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import es.dmoral.toasty.Toasty;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final int REQUEST_PERMISSION = 2048;
+    public boolean exit = false;
 
 
     BubblesManager bubblesManager;
@@ -114,22 +116,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onBackPressed() {
-
-        Fragment shareFragment = getFragmentManager().findFragmentByTag("SHARE_FRAGMENT");
-        Fragment homeFragment = getFragmentManager().findFragmentByTag("home_fragment");
-        if (shareFragment != null && shareFragment.isVisible()) {
-            return;
-        } else {
-            int count = getFragmentManager().getBackStackEntryCount();
-             if (count == 0) {
-                super.onBackPressed();
-                //additional cod
-            } else {
-                Utils.backFragment(getSupportFragmentManager(), 0);
-            }
+        if(!exit){
+            exit = true;
+            Toasty.normal(MainActivity.this, "Press back again to close app!",Utils.getDrawableResource(R.drawable.ic_close_black_24dp, this) ).show();
+        }else{
+            this.finish();
         }
-
-
     }
 
     @Override
@@ -223,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void Initialization() {
+        exit = false;
         setSelectedFloatItem(ivFloatHome, ivUpdropHome);
         Utils.openFragmentTag(getSupportFragmentManager(), R.id.cl_main_activity, new HomeFragment(), "home_fragment");
 
@@ -240,6 +233,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void setSelectedFloatItem(View firstView, View secondView) {
+        exit = false;
         Utils.backFragment(getSupportFragmentManager(), 0);
         int fixedWith = (int) (Resources.getSystem().getDisplayMetrics().widthPixels * 0.14);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(

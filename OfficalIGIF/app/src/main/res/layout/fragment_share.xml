@@ -76,13 +76,14 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-
                 android:padding="2dp">
 
                 <ImageView
+                    android:layout_gravity="center_horizontal"
                     android:id="@+id/iv_loading_sharing_media"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -119,6 +120,12 @@
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:padding="8dp">
+                <ImageView
+                    android:id="@+id/iv_favorite"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/ic_favorite_border_white_24dp" />
 
                 <ImageView
                     android:id="@+id/iv_copy_link"
@@ -135,25 +142,21 @@
                     android:layout_margin="8dp"
                     android:src="@drawable/facebookwhite" />
 
-                <ImageView
-                    android:id="@+id/iv_favorite"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_margin="8dp"
-                    android:src="@drawable/ic_favorite_border_white_24dp" />
 
-                <ImageView
-                    android:id="@+id/iv_download"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_margin="8dp"
-                    android:src="@drawable/ic_file_download_black_24dp" />
+
+
                 <ImageView
                     android:id="@+id/iv_messenger"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_margin="8dp"
                     android:src="@drawable/messenger_bubble_large_white"/>
+                <ImageView
+                    android:id="@+id/iv_download"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/ic_file_download_black_24dp" />
 
 
             </LinearLayout>

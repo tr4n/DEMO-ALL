@@ -137,7 +137,7 @@ public class SearchedAdapter extends RecyclerView.Adapter<SearchedAdapter.Search
             Log.d(TAG, "onClick:ddd " + mediaModel.source_tld);
 
 
-            Utils.replaceFragmentTag(
+            Utils.openFragmentTag(
                     ( (MainActivity) context).getSupportFragmentManager(),
                     R.id.cl_main_activity,
                     new ShareFragment(),

@@ -68,10 +68,10 @@ public class RelatedAdapter extends RecyclerView.Adapter<RelatedAdapter.RelatedV
             final MediaModel mediaModel = dataListSticky.relatedList.get(position);
             int width = Integer.parseInt(mediaModel.fixed_height_downsampled_height);
             int height = Integer.parseInt(mediaModel.fixed_height_downsampled_width);
-            int fixedWidth =  (int) (Resources.getSystem().getDisplayMetrics().widthPixels*0.4);
-            int fixedHeight = (int) (Resources.getSystem().getDisplayMetrics().heightPixels*0.2);
+            int fixedWidth =  (int) (Resources.getSystem().getDisplayMetrics().widthPixels*0.6);
+            int fixedHeight = (int) (Resources.getSystem().getDisplayMetrics().heightPixels*0.3);
             ivMedia.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            Utils.loadImageUrl(ivLoading, ivMedia,fixedWidth, fixedHeight,mediaModel.fixed_height_downsampled_url, context );
+            Utils.loadImageUrl(ivLoading, ivMedia,fixedWidth, fixedHeight,mediaModel.fixed_height_small_url, context );
 
 
             itemView.setOnClickListener(new View.OnClickListener() {

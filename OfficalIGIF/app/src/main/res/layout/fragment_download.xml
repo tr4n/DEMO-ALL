@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#fff"
     tools:context=".fragments.DownloadFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -46,12 +47,11 @@
         android:background="@color/colorLine"
        />
 
-    <GridView
-        android:id="@+id/gv_downloads"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_downloads"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:numColumns="2"
-      ></GridView>
+      ></android.support.v7.widget.RecyclerView>
 
 
 </LinearLayout>

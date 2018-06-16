@@ -47,14 +47,15 @@ public class DownloadUtils {
         if (!folder.exists()) {
             folder.mkdirs();
         }
-        File downloadFile = new File(folder, mediaModel.id + ".gif");
+        String nameFile = mediaModel.original_width + "---"+mediaModel.original_height+ "---" + mediaModel.id + "-iGIF.GIF";
+        File downloadFile = new File(folder, nameFile);
         if (downloadFile.exists()) {
             Toast.makeText(context, "File have already downloaded", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Uri downloadUri = Uri.parse(mediaModel.original_url);
-        Uri destinationUri = Uri.parse(context.getExternalCacheDir() + "/iGIF/downloads/" + mediaModel.id + ".gif");
+        Uri destinationUri = Uri.parse(context.getExternalCacheDir() + "/iGIF/downloads/" + nameFile);
         DownloadRequest downloadRequest = new DownloadRequest(downloadUri)
                 .setDownloadContext(context)
                 .setRetryPolicy(new DefaultRetryPolicy())
@@ -63,7 +64,7 @@ public class DownloadUtils {
                 .setDownloadListener(new DownloadStatusListener() {
                     @Override
                     public void onDownloadComplete(int id) {
-                        Toast.makeText(context, "Complete", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "downloaded!", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -81,24 +82,27 @@ public class DownloadUtils {
         Log.d(TAG, "downloadMedia: " + "download ThinDownLoadManager");
     }
 
+
+
     public void load(final GifImageView gifImageView, final ImageView loadingView, final int width, final int height, final MediaModel mediaModel, final Context context) {
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width, height);
         loadingView.setLayoutParams(layoutParams);
         gifImageView.setLayoutParams(layoutParams);
         loadingView.setImageResource(Utils.gerRandomResourceColor());
+
         loadingView.setVisibility(View.VISIBLE);
         gifImageView.setVisibility(View.GONE);
-
+        final String nameFile = mediaModel.original_width + "---"+mediaModel.original_height+ "---" + mediaModel.id + "-iGIF.GIF";
 
         File folder = new File(context.getExternalCacheDir() + "/iGIF/preLoading");
         if (!folder.exists()) {
             folder.mkdirs();
         }
-        File downloadFile = new File(folder, mediaModel.id + ".gif");
+        File downloadFile = new File(folder, nameFile);
         if (downloadFile.exists()) {
             try {
-                gifImageView.setImageDrawable(new GifDrawable(context.getExternalCacheDir() + "/iGIF/preLoading/" + mediaModel.id + ".gif"));
+                gifImageView.setImageDrawable(new GifDrawable(context.getExternalCacheDir() + "/iGIF/preLoading/" + nameFile));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -108,7 +112,8 @@ public class DownloadUtils {
         }
 
         Uri downloadUri = Uri.parse(mediaModel.original_url);
-        Uri destinationUri = Uri.parse(context.getExternalCacheDir() + "/iGIF/preLoading/" + mediaModel.id + ".gif");
+
+        Uri destinationUri = Uri.parse(context.getExternalCacheDir() + "/iGIF/preLoading/" + nameFile);
         DownloadRequest downloadRequest = new DownloadRequest(downloadUri)
                 .setDownloadContext(context)
                 .setRetryPolicy(new DefaultRetryPolicy())
@@ -118,7 +123,7 @@ public class DownloadUtils {
                     @Override
                     public void onDownloadComplete(int id) {
                         try {
-                            gifImageView.setImageDrawable(new GifDrawable(context.getExternalCacheDir() + "/iGIF/preLoading/" + mediaModel.id + ".gif"));
+                            gifImageView.setImageDrawable(new GifDrawable(context.getExternalCacheDir() + "/iGIF/preLoading/" + nameFile));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -146,10 +151,12 @@ public class DownloadUtils {
         if (folder.listFiles() == null) return null;
         for (File file : folder.listFiles()) {
             Log.d(TAG, "getDownloadedFile: " + file.getName().toString());
-            if (file.getName().toString().contains(".gif")) {
+            if (file.getName().toString().contains("-iGIF.GIF")) {
                 fileList.add(file);
             }
         }
         return fileList;
     }
+
+
 }

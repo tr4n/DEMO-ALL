@@ -1,8 +1,10 @@
 package com.example.mypc.officaligif.fragments;
 
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,11 +19,13 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.mypc.officaligif.R;
+import com.example.mypc.officaligif.activities.ViewerActivity;
 import com.example.mypc.officaligif.adapters.RelatedAdapter;
 import com.example.mypc.officaligif.database_dir.TopicDatabaseManager;
 import com.example.mypc.officaligif.messages.BackSticky;
 import com.example.mypc.officaligif.messages.DataListSticky;
 import com.example.mypc.officaligif.messages.MediaSticky;
+import com.example.mypc.officaligif.messages.ViewSticky;
 import com.example.mypc.officaligif.models.MediaModel;
 import com.example.mypc.officaligif.utils.DownloadUtils;
 import com.example.mypc.officaligif.utils.Utils;
@@ -139,7 +143,25 @@ public class ShareFragment extends Fragment {
         unbinder.unbind();
     }
 
-    @OnClick({R.id.iv_back, R.id.iv_copy_link, R.id.iv_facebook, R.id.iv_favorite, R.id.iv_download, R.id.rl_related_title, R.id.iv_messenger})
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                    Utils.backFragment(getFragmentManager(), classID);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    @OnClick({R.id.iv_back, R.id.iv_copy_link, R.id.iv_facebook, R.id.iv_favorite, R.id.iv_download, R.id.rl_related_title, R.id.iv_messenger, R.id.iv_loading_sharing_media})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
@@ -147,9 +169,8 @@ public class ShareFragment extends Fragment {
                 break;
             case R.id.iv_copy_link:
                 Utils.copyClipBoard(mediaModel.original_url, getContext());
-                ImageView temporaryView = new ImageView(getContext());
-                temporaryView.setImageResource(R.drawable.ic_content_copy_white_24dp);
-                Toasty.normal(getContext(), "Copied link", temporaryView.getDrawable()).show();
+
+                Toasty.normal(getContext(), "Copied link", Utils.getDrawableResource(R.drawable.ic_content_copy_white_24dp, getContext())).show();
                 break;
             case R.id.iv_facebook:
                 Utils.shareFacebook(mediaModel, getActivity());
@@ -169,8 +190,27 @@ public class ShareFragment extends Fragment {
                 DownloadUtils.getInstance(getContext()).downloadMedia(mediaModel, getContext());
                 break;
             case R.id.rl_related_title:
-                setExpanedRelatedList(!isExpanded);
+                if (!isExpanded) {
+
+                    CountDownTimer countDownTimer = new CountDownTimer(1000, 500) {
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+                            Toasty.normal(getContext(), "Initialize...", Utils.getDrawableResource(R.drawable.ic_bubble_chart_white_24dp, getContext())).show();
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            setExpanedRelatedList(true);
+                        }
+                    }.start();
+                } else {
+                    setExpanedRelatedList(false);
+                }
+
                 break;
+            case R.id.iv_loading_sharing_media:
+            Toasty.normal(getContext(), "loading...", Utils.getDrawableResource(R.drawable.ic_bubble_chart_white_24dp, getContext())).show();
+            break;
         }
     }
 
@@ -193,7 +233,7 @@ public class ShareFragment extends Fragment {
 
         int width = Integer.parseInt(mediaModel.original_width);
         int height = Integer.parseInt(mediaModel.original_height);
-        int fixedWidth = WIDTH_SCREEN;
+        int fixedWidth = (int) (WIDTH_SCREEN * 0.8);
         int fixedHeight = (fixedWidth * height) / width;
         DownloadUtils.getInstance(getContext()).load(ivSharingMedia, ivLoadingSharingMedia, fixedWidth, fixedHeight, mediaModel, getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -211,6 +251,16 @@ public class ShareFragment extends Fragment {
             ivFavorite.setImageResource(R.drawable.ic_favorite_border_white_24dp);
         }
 
+        ivSharingMedia.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ViewerActivity.class);
+                EventBus.getDefault().postSticky(new ViewSticky(null, mediaModel, 3));
+                getContext().startActivity(intent);
+            }
+        });
+
+
     }
 
     private void setExpanedRelatedList(boolean expanded) {
@@ -222,24 +272,6 @@ public class ShareFragment extends Fragment {
             rvRelatedItems.setVisibility(View.GONE);
             ivExpanded.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        getView().setFocusableInTouchMode(true);
-        getView().requestFocus();
-        getView().setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                    Utils.backFragment(getFragmentManager(), classID);
-                    return true;
-                }
-                return false;
-            }
-        });
     }
 
 

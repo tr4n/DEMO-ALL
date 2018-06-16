@@ -5,17 +5,14 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.mypc.officaligif.R;
-import com.example.mypc.officaligif.adapters.FavoriteAdapter;
 import com.example.mypc.officaligif.adapters.FavoriteGridViewAdapter;
 import com.example.mypc.officaligif.database_dir.TopicDatabaseManager;
 import com.example.mypc.officaligif.messages.BackSticky;
@@ -38,7 +35,6 @@ public class FavoriteFragment extends Fragment {
 
     View fragmentView;
     Unbinder unbinder;
-    int classID = 0;
     List<MediaModel> favoriteList;
     FavoriteGridViewAdapter favoriteGridViewAdapter;
     @BindView(R.id.gv_favorites)
@@ -63,6 +59,11 @@ public class FavoriteFragment extends Fragment {
 
 
         return fragmentView;
+    }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
 
@@ -113,9 +114,5 @@ public class FavoriteFragment extends Fragment {
     }
 
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
-    }
+
 }
