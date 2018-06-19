@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class TopicDatabaseManager  {
+public class TopicDatabaseManager {
     private static final String TAG = "TopicDatabaseManager";
 
     private static final String TABLE_MAIN = "main_topics";
@@ -53,12 +53,12 @@ public class TopicDatabaseManager  {
 
         for (int topic = 1; topic <= NUMBER_TOPICS; topic++) {
             cursor = sqLiteDatabase.rawQuery(
-                    "select * from " +
-                            TABLE_MAIN + " , " + TABLE_TOPICS +
+                    "select * from " + TABLE_MAIN + " , " + TABLE_TOPICS +
                             " where " + TABLE_MAIN + ".id = " +
                             TABLE_TOPICS + ".parent_id and " +
                             TABLE_TOPICS + ".parent_id = " + topic,
                     null);
+            if(cursor.getCount() == 0) continue;
             cursor.moveToFirst();
 
 
@@ -70,7 +70,7 @@ public class TopicDatabaseManager  {
             List<TopicModel> topicModelList = new ArrayList<>();
 
 
-            while (cursor.moveToNext()) {
+            do {
                 //read data
                 int id = cursor.getInt(4);
                 String key = cursor.getString(5);
@@ -79,39 +79,9 @@ public class TopicDatabaseManager  {
 
                 topicModelList.add(new TopicModel(id, key, url, parentid));
 
-
                 final String keySearch = key;
-                /*
-                ResponseModel responseModel = new ResponseModel(keySearch + " random", "eng", 1);
-                RetrofitInstance.getRetrofitGifInstance().create(iGIPHYService.class)
-                        .getMediaResponses(responseModel.key, responseModel.lang, responseModel.limit, responseModel.api_key)
-                        .enqueue(new Callback<MediaResponse>() {
-                            @Override
-                            public void onResponse(Call<MediaResponse> call, final Response<MediaResponse> response) {
-                                if (response.body() == null || response.body().pagination.count == 0 || response.body().data.isEmpty()) {
-                                    return;
-                                }
 
-
-                                final List<MediaModel> mediaModelList = new ArrayList<>();
-                                List<MediaResponse.DataJSON> dataJSONList = response.body().data;
-                                String fixedUrl = response.body().data.get(0).images.preview_gif.url;
-                                Log.d(TAG, "onResponse: " + keySearch + ": " + fixedUrl);
-
-
-                            }
-
-                            @Override
-                            public void onFailure(Call<MediaResponse> call, Throwable t) {
-
-                            }
-                        });
-
-*/
-
-
-                //  Log.d(TAG, "getSuggestTopicModelList: \n" + url + "\n- " + fixedUrl[0] );
-            }
+            } while (cursor.moveToNext());
 
             suggestTopicModelList.add(new SuggestTopicModel(
                     parent_id,
@@ -203,42 +173,17 @@ public class TopicDatabaseManager  {
                 sqLiteDatabase.insert(RECENT_TOPICS, null, contentValues);
             }
 
-
-            cursor = sqLiteDatabase.rawQuery("select * from " + RECENT_TOPICS, null);
-
-            Log.d(TAG, "updateRecentTopic: after delete " + cursor.getCount());
-            cursor.moveToFirst();
-            do {
-                Log.d(TAG, "updateRecentTopic: list after add " + cursor.getString(1));
-            } while (cursor.moveToNext());
-
-
         }
     }
-
-    public List<String> getRecentSearchList() {
-        List<String> topicList = new ArrayList<>();
-        Cursor cursor = sqLiteDatabase.rawQuery("select * from " + RECENT_TOPICS, null);
-        int count = cursor.getCount();
-        if (count != 0) {
-            cursor.moveToFirst();
-            while (cursor.moveToNext()) {
-                topicList.add(cursor.getString(1));
-            }
-        }
-
-        Log.d(TAG, "getRecentSearchList: " + topicList.size());
-        return topicList;
-    }
-
 
     public List<MediaModel> getFavoriteList() {
         List<MediaModel> favoriteList = new ArrayList<>();
 
         Cursor cursor = sqLiteDatabase.rawQuery("select * from " + FAVORITE_TABLE, null);
+        if(cursor.getCount() == 0) return favoriteList;
         cursor.moveToNext();
 
-        while (cursor.moveToNext()) {
+        do {
             String id = cursor.getString(0);
             String original_url = cursor.getString(1);
             String original_width = cursor.getString(2);
@@ -308,24 +253,24 @@ public class TopicDatabaseManager  {
                     original_mp4_url,
                     position
             );
-            
+
             favoriteList.add(mediaModel);
-        }
+        }while(cursor.moveToNext());
 
 
         return favoriteList;
 
     }
-    
-    public boolean inFavoriteList(MediaModel mediaModel){
-        Cursor cursor = sqLiteDatabase.rawQuery(" select * from " + FAVORITE_TABLE + " where id LIKE \"" + mediaModel.id+"\"", null);
+
+    public boolean inFavoriteList(MediaModel mediaModel) {
+        Cursor cursor = sqLiteDatabase.rawQuery(" select * from " + FAVORITE_TABLE + " where id LIKE \"" + mediaModel.id + "\"", null);
 
         return (cursor.getCount() > 0);
     }
-    
-    public boolean addFavoriteItem(MediaModel mediaModel){
-        if(inFavoriteList(mediaModel)) return false;
-        
+
+    public boolean addFavoriteItem(MediaModel mediaModel) {
+        if (inFavoriteList(mediaModel)) return false;
+
         ContentValues contentValues = new ContentValues();
         contentValues.put("id", mediaModel.id);
         contentValues.put("original_url", mediaModel.original_url);
@@ -362,30 +307,29 @@ public class TopicDatabaseManager  {
         contentValues.put("position", mediaModel.position);
         Log.d(TAG, "addFavoriteItem: " + mediaModel.title);
 
-        sqLiteDatabase.insert(FAVORITE_TABLE,null, contentValues);
+        sqLiteDatabase.insert(FAVORITE_TABLE, null, contentValues);
         return true;
     }
 
-    public boolean removeFavoriteItem(MediaModel mediaModel){
-       return sqLiteDatabase.delete(FAVORITE_TABLE, "id LIKE \"" + mediaModel.id+ "\"", null) > 0;
+    public boolean removeFavoriteItem(MediaModel mediaModel) {
+        return sqLiteDatabase.delete(FAVORITE_TABLE, "id LIKE \"" + mediaModel.id + "\"", null) > 0;
     }
 
-    public List<String>  getHistorySearchList(){
-         List<String> historySearchList = new ArrayList<>();
-         Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + SEARCHED_TOPICS + " order by searching_times", null);
-         int countAll = cursor.getCount();
-         cursor.moveToFirst();
-         int pointer = 0;
-         while((pointer++) < Math.min(countAll, 15)){
-             historySearchList.add(cursor.getString(1));
-             cursor.moveToNext();
-         }
+    public List<String> getHistorySearchList() {
+        List<String> historySearchList = new ArrayList<>();
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + SEARCHED_TOPICS + " order by searching_times", null);
+        int countAll = cursor.getCount();
+        if(countAll == 0) return historySearchList;
+        cursor.moveToFirst();
+        int pointer = 0;
+        while ((pointer++) < Math.min(countAll, 15)) {
+            historySearchList.add(cursor.getString(1));
+            cursor.moveToNext();
+        }
 
-         return historySearchList;
+        return historySearchList;
 
     }
-
-
 
 
 }

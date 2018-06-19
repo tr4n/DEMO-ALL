@@ -85,7 +85,7 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
             //  Utils.setTopicModelData(itemView, suggestTopicModel, position, context);
             final TopicModel topicModel = suggestTopicModel.topicList.get(position);
             int widthScreen = Resources.getSystem().getDisplayMetrics().widthPixels;
-            int width = (int) (widthScreen * 0.6);
+            int width = (int) (widthScreen * 0.4);
             int height = (int) (widthScreen * 0.4);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width, height);
             ivLoadingTopic.setLayoutParams(layoutParams);

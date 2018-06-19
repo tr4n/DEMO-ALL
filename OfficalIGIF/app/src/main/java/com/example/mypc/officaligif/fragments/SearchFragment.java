@@ -7,6 +7,7 @@ import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,7 +99,7 @@ public class SearchFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void getTopicMessager(SuggestTopicSticky suggestTopicSticky) {
-        tvKey.setText(suggestTopicSticky.topic);
+        tvKey.setText(Utils.getBaseString(suggestTopicSticky.topic));
         responseModel = new ResponseModel(suggestTopicSticky.topic, "eng", 150);
         tvKey.setSelected(true);
         TopicDatabaseManager.getInstance(getContext()).saveSearchedTopic(suggestTopicSticky.topic);
@@ -147,7 +148,7 @@ public class SearchFragment extends Fragment {
 
 
     private void Definition() {
-        EventBus.getDefault().postSticky(new BackSticky(0));
+
     }
 
     private void Initialization() {
@@ -291,5 +292,24 @@ public class SearchFragment extends Fragment {
 
         });
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                    Utils.backFragment(getFragmentManager(), 0);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
 
 }

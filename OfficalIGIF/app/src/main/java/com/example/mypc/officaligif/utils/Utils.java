@@ -101,17 +101,6 @@ public class Utils {
                 .addToBackStack(TAG)
                 .commit();
     }
-
-    public static void refreshFragment(FragmentManager fragmentManager, String fragmentTag) {
-        Fragment fragment = null;
-        fragment = fragmentManager.findFragmentByTag(fragmentTag);
-        fragmentManager.beginTransaction()
-                .detach(fragment)
-                .attach(fragment)
-                .commit();
-    }
-
-
     public static void backFragment(FragmentManager fragmentManager, int numberStep) {
 
 

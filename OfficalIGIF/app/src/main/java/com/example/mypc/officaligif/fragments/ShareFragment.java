@@ -173,20 +173,22 @@ public class ShareFragment extends Fragment {
                 Toasty.normal(getContext(), "Copied link", Utils.getDrawableResource(R.drawable.ic_content_copy_white_24dp, getContext())).show();
                 break;
             case R.id.iv_facebook:
+                Toasty.normal(getContext(), "Sharing ... ", Utils.getDrawableResource(R.drawable.facebookwhite, getContext())).show();
                 Utils.shareFacebook(mediaModel, getActivity());
                 break;
             case R.id.iv_messenger:
+                Toasty.normal(getContext(), "Sharing ... ", Utils.getDrawableResource(R.drawable.messenger_bubble_large_white, getContext())).show();
                 Utils.shareMessenger(mediaModel, getActivity());
                 break;
             case R.id.iv_favorite:
+                ivFavorite.setImageResource(R.drawable.ic_favorite_white_24dp);
                 if (TopicDatabaseManager.getInstance(getContext()).addFavoriteItem(mediaModel)) {
-                    ivFavorite.setImageResource(R.drawable.ic_favorite_white_24dp);
-                    Toasty.normal(getContext(), "", Utils.getDrawableResource(R.drawable.ic_favorite_white_24dp, getContext())).show();
-                } else {
+                    Toasty.normal(getContext(), "This item is added in the favorites", Utils.getDrawableResource(R.drawable.ic_favorite_white_24dp, getContext())).show();
 
                 }
                 break;
             case R.id.iv_download:
+                Toasty.normal(getContext(), "Downloading...", Utils.getDrawableResource(R.drawable.ic_file_download_black_24dp, getContext())).show();
                 DownloadUtils.getInstance(getContext()).downloadMedia(mediaModel, getContext());
                 break;
             case R.id.rl_related_title:
@@ -195,7 +197,7 @@ public class ShareFragment extends Fragment {
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 500) {
                         @Override
                         public void onTick(long millisUntilFinished) {
-                            Toasty.normal(getContext(), "Initialize...", Utils.getDrawableResource(R.drawable.ic_bubble_chart_white_24dp, getContext())).show();
+                            Toasty.normal(getContext(), "Initialize related medias ...", Utils.getDrawableResource(R.drawable.ic_bubble_chart_white_24dp, getContext())).show();
                         }
 
                         @Override

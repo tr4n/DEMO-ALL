@@ -34,7 +34,7 @@
             android:singleLine="true"
             android:text="Searching..."
             android:textAlignment="center"
-            android:textAllCaps="true"
+            android:textAllCaps="false"
             android:textColor="#ff00"
             android:textSize="14sp"
             android:textStyle="bold" />

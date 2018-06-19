@@ -1,10 +1,12 @@
 package com.example.mypc.officaligif.services;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
+import android.os.Vibrator;
 import android.support.constraint.Constraints;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -168,9 +170,22 @@ public class BubbleService extends Service implements View.OnClickListener, View
                     case MotionEvent.ACTION_MOVE:
                         lpBubble.x = initialX + (int) (event.getRawX() - initialTouchX);
                         lpBubble.y = initialY + (int) (event.getRawY() - initialTouchY);
+                        if(isNearTrash(lpBubble)){
+                            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                            if (vibrator.hasVibrator()) {
+                                vibrator.vibrate(50); // for 500 ms
+                            }
+                            ivTrash.setVisibility(View.GONE);
+                            ivTrashContainer.setVisibility(View.VISIBLE);
+                            windowManager.updateViewLayout(trashLayout, lpTrash);
+                        }else{
+                            ivTrashContainer.setVisibility(View.GONE);
+                            ivTrash.setVisibility(View.VISIBLE);
+
+                        }
+
                         windowManager.updateViewLayout(bubbleLayout, lpBubble);
-                        //   Log.d(TAG, "onTouch: " + lpBubble.x + " | " + lpBubble.y + " (" + (lpBubble.y - (int)(HEIGHT_PIXELS*0.5)) + "," + HEIGHT_PIXELS + ")");
-                        //warnNearing(isNearTrash(lpBubble));
+
                         break;
 
                 }

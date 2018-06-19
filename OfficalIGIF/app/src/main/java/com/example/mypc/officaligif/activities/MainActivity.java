@@ -1,6 +1,7 @@
 package com.example.mypc.officaligif.activities;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,7 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AlertDialog;
+
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
@@ -116,10 +117,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onBackPressed() {
-        if(!exit){
+        Fragment searchFragment = getFragmentManager().findFragmentByTag("search_fragment");
+        if (!exit) {
             exit = true;
-            Toasty.normal(MainActivity.this, "Press back again to close app!",Utils.getDrawableResource(R.drawable.ic_close_black_24dp, this) ).show();
-        }else{
+            Toasty.normal(MainActivity.this, "Press back again to close app!", Utils.getDrawableResource(R.drawable.ic_close_black_24dp, this)).show();
+        } else {
             this.finish();
         }
     }
@@ -135,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_float_icon:
+                Toasty.normal(MainActivity.this, "Collapsed to floating icon").show();
                 Intent intent = new Intent(MainActivity.this, BubbleService.class);
                 startService(intent);
                 break;

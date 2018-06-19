@@ -164,15 +164,19 @@ public class ViewerActivity extends AppCompatActivity {
                 Toasty.normal(ViewerActivity.this, "Copied link", Utils.getDrawableResource(R.drawable.ic_content_copy_white_24dp, this)).show();
                 break;
             case R.id.iv_facebook:
+                Toasty.normal(ViewerActivity.this, "Sharing ... ", Utils.getDrawableResource(R.drawable.facebookwhite, this)).show();
                 Utils.shareFacebook(mediaModel, ViewerActivity.this);
             case R.id.iv_messenger:
+                Toasty.normal(ViewerActivity.this, "Sharing ... ", Utils.getDrawableResource(R.drawable.messenger_bubble_large_white, this)).show();
                 Utils.shareMessenger(mediaModel, ViewerActivity.this);
                 break;
             case R.id.iv_download:
+                Toasty.normal(ViewerActivity.this, "Downloading ... ", Utils.getDrawableResource(R.drawable.ic_file_download_black_24dp, this)).show();
                 DownloadUtils.getInstance(this).downloadMedia(mediaModel, this);
                 break;
             case R.id.iv_favorite:
                 if (TopicDatabaseManager.getInstance(this).inFavoriteList(mediaModel)) {
+                    Toasty.normal(ViewerActivity.this, "Liked! ", Utils.getDrawableResource(R.drawable.ic_favorite_white_24dp, this)).show();
                     ivFavorite.setImageResource(R.drawable.ic_favorite_white_24dp);
                     break;
                 } else if (viewSticky.TAG == 3) {
@@ -200,11 +204,12 @@ public class ViewerActivity extends AppCompatActivity {
     public void setZoom(){
         if (givMedia.getVisibility() == View.GONE) return;
         if (isZoomed) {
-
+            Toasty.normal(ViewerActivity.this, "Zoom out", Utils.getDrawableResource(R.drawable.ic_zoom_out_white_24dp, this)).show();
             givMedia.setLayoutParams(getZoomLayoutParams(width, height, false));
             isZoomed = false;
             ivZoom.setImageResource(R.drawable.ic_zoom_in_white_24dp);
         } else {
+            Toasty.normal(ViewerActivity.this, "Zoom in", Utils.getDrawableResource(R.drawable.ic_zoom_in_white_24dp, this)).show();
             givMedia.setLayoutParams(getZoomLayoutParams(width, height, true));
             isZoomed = true;
             ivZoom.setImageResource(R.drawable.ic_zoom_out_white_24dp);

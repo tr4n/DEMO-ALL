@@ -195,7 +195,7 @@ public class HomeFragment extends Fragment {
         titleSearch.setVisibility(View.GONE);
         rlTitle.setVisibility(View.VISIBLE);
         EventBus.getDefault().postSticky(new SuggestTopicSticky(topic));
-        Utils.replaceFragment(getFragmentManager(), R.id.cl_main_activity, new SearchFragment());
+        Utils.replaceFragmentTag(getFragmentManager(), R.id.cl_main_activity, new SearchFragment(), "search_fragment");
     }
 
     @OnClick({R.id.iv_search_title, R.id.iv_back, R.id.iv_search})

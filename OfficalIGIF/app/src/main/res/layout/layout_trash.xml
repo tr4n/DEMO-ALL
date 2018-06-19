@@ -4,16 +4,17 @@
     android:layout_height="match_parent"
     android:gravity="bottom|center_horizontal">
     <ImageView
+        android:elevation="2dp"
         android:layout_margin="20dp"
         android:id="@+id/iv_trash"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:src="@drawable/bubbletrash"/>
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/bubbletrashb"/>
     <ImageView
         android:visibility="gone"
         android:id="@+id/iv_trash_container"
-        android:layout_width="110dp"
-        android:layout_height="110dp"
-        android:src="@drawable/bubbletrash"/>
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/bubbletrashb"/>
 
 </LinearLayout>
